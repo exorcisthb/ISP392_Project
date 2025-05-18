@@ -53,6 +53,7 @@
     </style>
 </head>
 <body>
+    
     <div class="container mx-auto p-4">
         <!-- Search Bar -->
         <div class="search-container">
@@ -66,7 +67,21 @@
                 />
             </form>
         </div>
-
+ <!-- Header with User Menu -->
+        <div class="flex justify-end mb-6">
+            <div class="relative">
+                <button id="userMenuBtn" class="flex items-center space-x-2 bg-gray-200 p-2 rounded-full hover:bg-gray-300 focus:outline-none">
+                    <span class="text-gray-700">👤</span>
+                </button>
+                <div id="userMenu" class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg hidden z-10">
+                   
+                    <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100" onclick="editProfile()">View Profile</a>
+                    <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100" onclick="editProfile()">Edit Profile</a>
+                    <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100" onclick="signOut()">Sign Out</a>
+                </div>
+            </div>
+        </div>
+ 
         <!-- Search Results -->
         <%
             String query = request.getParameter("query");
@@ -127,6 +142,7 @@
                     }
                 }
         %>
+        
         <div class="mb-6 bg-white p-4 rounded-lg shadow">
             <h2 class="text-lg font-semibold mb-2">Search Results</h2>
             <ul class="space-y-2">
@@ -145,13 +161,7 @@
 
         <!-- Action Buttons -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <!-- Admin Actions -->
-            <div class="action-card">
-                <h3>Admin Actions</h3>
-                <a href="addAdmin.jsp" class="btn-blue">Add Admin</a>
-                <a href="editAdmin.jsp" class="btn-yellow">Edit Admin</a>
-                <a href="viewAdmin.jsp" class="btn-green">View Admin Profile</a>
-            </div>
+            
 
             <!-- Patient Actions -->
             <div class="action-card">
@@ -184,6 +194,12 @@
         function triggerAlert(action) {
             alert(action + ' clicked');
         }
+         // Toggle user menu
+        const userMenuBtn = document.getElementById('userMenuBtn');
+        const userMenu = document.getElementById('userMenu');
+        userMenuBtn.addEventListener('click', function() {
+            userMenu.classList.toggle('hidden');
+        });
     </script>
 </body>
 </html>
