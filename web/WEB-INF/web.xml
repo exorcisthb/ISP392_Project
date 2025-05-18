@@ -21,6 +21,10 @@
         <servlet-name>CompleteProfile</servlet-name>
         <servlet-class>controller.common.CompleteProfile</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>AddEmployeeServlet</servlet-name>
+        <servlet-class>controller.admin.AddEmployeeServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>LoginServlet</servlet-name>
         <url-pattern>/login</url-pattern>
@@ -40,6 +44,10 @@
     <servlet-mapping>
         <servlet-name>CompleteProfile</servlet-name>
         <url-pattern>/CompleteProfile</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AddEmployeeServlet</servlet-name>
+        <url-pattern>/AddEmployeeServlet</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
         <welcome-file>views/common/login.jsp</welcome-file>

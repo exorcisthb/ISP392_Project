@@ -49,13 +49,13 @@ public class UserDAO {
             stmt.setString(2, user.getEmail());
             stmt.setString(3, user.getPassword());
             stmt.setString(4, user.getRole());
-            stmt.setString(5, user.getPhone()); // Sẽ là null nếu không có giá trị
-            stmt.setObject(6, user.getCreatedBy(), java.sql.Types.INTEGER); // Cho phép null
+            stmt.setString(5, user.getPhone());
+            stmt.setObject(6, user.getCreatedBy(), java.sql.Types.INTEGER);
             stmt.setDate(7, user.getCreatedAt());
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             System.err.println("SQL Error in registerUserBasic: " + e.getMessage());
-            throw e; // Ném lại để xử lý ở layer trên
+            throw e;
         }
     }
 
@@ -108,6 +108,27 @@ public class UserDAO {
             stmt.setString(7, user.getSpecialization());
             stmt.setInt(8, user.getUserID());
             stmt.executeUpdate();
+        }
+    }
+
+    // Cập nhật thông tin nhân viên và trạng thái
+    public boolean updateEmployeeRole(Users user, int adminId) throws SQLException {
+        String sql = "UPDATE Users SET status = 'Active', fullName = ?, specialization = ?, phone = ?, dob = ?, " +
+                     "gender = ?, address = ?, createdBy = ?, updatedAt = GETDATE() WHERE userID = ?";
+        try (Connection conn = dbContext.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, user.getFullName());
+            stmt.setString(2, user.getSpecialization());
+            stmt.setString(3, user.getPhone());
+            stmt.setDate(4, user.getDob());
+            stmt.setString(5, user.getGender());
+            stmt.setString(6, user.getAddress());
+            stmt.setObject(7, adminId, java.sql.Types.INTEGER);
+            stmt.setInt(8, user.getUserID());
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("SQL Error in updateEmployeeRole: " + e.getMessage());
+            throw e;
         }
     }
 }
