@@ -35,4 +35,17 @@ public class UserService {
         user.setUpdatedAt(new Date(System.currentTimeMillis()));
         return userDAO.registerUser(user) > 0;
     }
+    public boolean changePassword(int userId, String oldPass, String newPass) {
+    UserDAO dao = new UserDAO();
+    if (dao.checkOldPassword(userId, oldPass)) {
+        return dao.updatePassword(newPass, newPass);
+    }
+    return false;
+}
+
+public boolean resetPassword(String email, String newPass) {
+    UserDAO dao = new UserDAO();
+    return dao.updatePassword(email, newPass);
+}
+
 }

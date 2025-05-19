@@ -43,5 +43,6 @@
     </servlet-mapping>
     <welcome-file-list>
         <welcome-file>views/common/login.jsp</welcome-file>
-    </welcome-file-list>
+    </welcome-file-list>  
+                                                                                       
 </web-app>

@@ -71,14 +71,14 @@ public class UserLoginController extends HttpServlet {
         }
         switch (role.toLowerCase()) {
             case "patient":
-                return "/user/Patient/PatientDashBoard.jsp";
+                return "/views/user/Patient/PatientDashBoard.jsp";
             case "doctor":
             case "nurse":
-                return "/user/Doctor,Nurse/EmployeeDashBoard.jsp";
+                return "/views/user/Doctor,Nurse/EmployeeDashBoard.jsp";
             case "receptionist":
-                return "/user/Receptionist/ReceptionistDashBoard.jsp";
+                return "/views/user/Receptionist/ReceptionistDashBoard.jsp";
             default:
-                return "/default/dashboard";
+                return "/views/default/dashboard";
         }
     }
 

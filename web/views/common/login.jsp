@@ -1,4 +1,4 @@
-<%-- 
+ <%-- 
     Document   : login
     Created on : Feb 27, 2025, 2:28:51 PM
     Author     : ADMIN
@@ -60,7 +60,7 @@
                             <label for="login-check">Ghi nhớ</label>
                         </div>
                         <div class="two">
-                            <label><a href="#">Quên mật khẩu?</a></label>
+          <label><a href="${pageContext.request.contextPath}/views/common/forgot_password.jsp">Quên mật khẩu?</a></label>
                         </div>
                     </div>
                     <c:if test="${not empty error}">

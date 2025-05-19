@@ -32,7 +32,7 @@ public class UserDAO {
             }
         }
 
-        sql = "SELECT COUNT(*) FROM PendingUsers WHERE email = ? OR username = ?";
+        sql = "SELECT COUNT(*) FROM users WHERE email = ? OR username = ?";
         try (Connection conn = dbContext.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, email);
@@ -48,7 +48,7 @@ public class UserDAO {
 
     // Thêm người dùng mới vào bảng PendingUsers
     public boolean registerPendingUser(Users user) throws SQLException {
-        String sql = "INSERT INTO PendingUsers (username, email, password, role, createdAt) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO users (username, email, password, role, createdAt) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = dbContext.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, user.getUsername());
@@ -62,7 +62,7 @@ public class UserDAO {
 
     // Tìm người dùng trong PendingUsers dựa trên email/username
     public Users findPendingUserByEmailOrUsername(String emailOrUsername) throws SQLException {
-        String sql = "SELECT * FROM PendingUsers WHERE email = ? OR username = ?";
+        String sql = "SELECT * FROM users WHERE email = ? OR username = ?";
         try (Connection conn = dbContext.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, emailOrUsername);
@@ -84,7 +84,7 @@ public class UserDAO {
 
     // Xóa người dùng khỏi PendingUsers
     public boolean deletePendingUser(String username) throws SQLException {
-        String sql = "DELETE FROM PendingUsers WHERE username = ?";
+        String sql = "DELETE FROM users WHERE username = ?";
         try (Connection conn = dbContext.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, username);
@@ -156,5 +156,33 @@ public class UserDAO {
             }
         }
         return null;
+    }    
+    // UserDAO.java (bổ sung)
+public boolean updatePassword(String email, String newPassword) {
+    String sql = "UPDATE Users SET password = ? WHERE email = ?";
+    try (Connection conn = dbContext.getConnection(); 
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setString(1, newPassword);
+        ps.setString(2, email);
+        return ps.executeUpdate() > 0;
+    } catch (Exception e) {
+        e.printStackTrace();
     }
+    return false;
+}
+
+public boolean checkOldPassword(int userId, String oldPassword) {
+    String sql = "SELECT * FROM Users WHERE id = ? AND password = ?";
+    try (Connection conn = dbContext.getConnection(); 
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setInt(1, userId);
+        ps.setString(2, oldPassword);
+        ResultSet rs = ps.executeQuery();
+        return rs.next();
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return false;
+}
+
 }
