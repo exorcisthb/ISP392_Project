@@ -77,12 +77,7 @@
                     <c:if test="${not empty successMessage}">
                         <div class="success" style="color: green;">${successMessage}</div>
                     </c:if>
-                    <c:if test="${not empty error}">
-                        <div class="error" style="color: red;">${error}</div>
-                    </c:if>
-                    <c:if test="${not empty successMessage}">
-                        <div class="success" style="color: green;">${successMessage}</div>
-                    </c:if>
+                   
                 </form>
             </div>
 

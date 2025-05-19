@@ -2,6 +2,7 @@ package model.service;
 
 import java.sql.SQLException;
 import java.sql.Date;
+import java.time.LocalDate;
 import model.dao.UserDAO;
 import model.entity.Users;
 import org.mindrot.jbcrypt.BCrypt;
@@ -112,6 +113,20 @@ public class UserService {
         boolean updated = userDAO.updateEmployeeRole(user, adminId);
         if (!updated) {
             throw new Exception("Không thể cập nhật thông tin nhân viên!");
+        }
+    }
+     // Validate email: must end with @gmail.com
+    private void validateEmail(String email) throws IllegalArgumentException {
+        if (email == null || email.trim().isEmpty() || !email.endsWith("@gmail.com") || email.equals("@gmail.com")) {
+            throw new IllegalArgumentException("Email phải có đuôi @gmail.com.");
+        }
+    }
+    // Validate DOB: must not exceed current date
+    private void validateDob(Date dob) throws IllegalArgumentException {
+        LocalDate currentDate = LocalDate.now(); // Current date: 19/05/2025
+        LocalDate dobDate = dob.toLocalDate();
+        if (dobDate.isAfter(currentDate)) {
+            throw new IllegalArgumentException("Năm sinh không được vượt quá thời gian thực.");
         }
     }
 }

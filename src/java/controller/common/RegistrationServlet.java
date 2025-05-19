@@ -28,11 +28,24 @@ public class RegistrationServlet extends HttpServlet {
         String password = request.getParameter("password");
         String role = request.getParameter("role");
 
+        // Lưu giá trị tạm để giữ nguyên khi có lỗi
+        request.setAttribute("username", username);
+        request.setAttribute("password", password);
+        request.setAttribute("role", role);
+
         if (username == null || username.trim().isEmpty() ||
             email == null || email.trim().isEmpty() ||
             password == null || password.trim().isEmpty() ||
             role == null || role.trim().isEmpty()) {
             request.setAttribute("error", "Vui lòng điền đầy đủ Username, Email, Password và Role.");
+            request.getRequestDispatcher("/views/common/login.jsp").forward(request, response);
+            return;
+        }
+
+        // Validate email
+        if (!email.endsWith("@gmail.com") || email.equals("@gmail.com")) {
+            request.setAttribute("error", "Gmail sai");
+            request.setAttribute("email", ""); // Reset email
             request.getRequestDispatcher("/views/common/login.jsp").forward(request, response);
             return;
         }
@@ -45,11 +58,18 @@ public class RegistrationServlet extends HttpServlet {
                 response.sendRedirect(request.getContextPath() + "/UserLoginController");
             } else {
                 request.setAttribute("error", "Username hoặc Email đã tồn tại.");
+                request.setAttribute("email", email); // Giữ email nếu lỗi này
                 request.getRequestDispatcher("/views/common/login.jsp").forward(request, response);
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            request.setAttribute("error", "Lỗi khi đăng ký: " + e.getMessage());
+            if (e.getMessage().contains("Email phải có đuôi @gmail.com.")) {
+                request.setAttribute("error", "Gmail sai");
+                request.setAttribute("email", ""); // Reset email nếu lỗi định dạng
+            } else {
+                request.setAttribute("error", "Lỗi khi đăng ký: " + e.getMessage());
+                request.setAttribute("email", email); // Giữ email nếu lỗi khác
+            }
             request.getRequestDispatcher("/views/common/login.jsp").forward(request, response);
         }
     }

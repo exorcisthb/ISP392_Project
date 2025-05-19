@@ -3,6 +3,7 @@ package controller.common;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.sql.Date;
+import java.time.LocalDate;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -44,6 +45,15 @@ public class CompleteProfileController extends HttpServlet {
             String medicalHistory = request.getParameter("medicalHistory"); // Chỉ cho Patient
             String specialization = request.getParameter("specialization"); // Chỉ cho Doctor/Nurse
 
+            // Lưu giá trị tạm để giữ nguyên khi có lỗi
+            request.setAttribute("fullName", fullName);
+            request.setAttribute("dob", dobStr);
+            request.setAttribute("gender", gender);
+            request.setAttribute("phone", phone);
+            request.setAttribute("address", address);
+            request.setAttribute("medicalHistory", medicalHistory);
+            request.setAttribute("specialization", specialization);
+
             // Validate dữ liệu
             if (fullName == null || fullName.trim().isEmpty() ||
                 dobStr == null || dobStr.trim().isEmpty() ||
@@ -62,9 +72,26 @@ public class CompleteProfileController extends HttpServlet {
                 return;
             }
 
+            // Validate DOB
+            Date dob;
+            try {
+                dob = Date.valueOf(dobStr);
+                LocalDate currentDate = LocalDate.now(); // Current date: 19/05/2025
+                LocalDate dobDate = dob.toLocalDate();
+                if (dobDate.isAfter(currentDate)) {
+                    request.setAttribute("error", "Năm sinh không được vượt quá thời gian thực.");
+                    redirectToCompleteProfile(user.getRole(), request, response);
+                    return;
+                }
+            } catch (IllegalArgumentException e) {
+                request.setAttribute("error", "Ngày sinh không hợp lệ. Vui lòng nhập theo định dạng YYYY-MM-DD.");
+                redirectToCompleteProfile(user.getRole(), request, response);
+                return;
+            }
+
             // Cập nhật thông tin user
             user.setFullName(fullName);
-            user.setDob(Date.valueOf(dobStr));
+            user.setDob(dob);
             user.setGender(gender);
             user.setPhone(phone);
             user.setAddress(address);
@@ -80,9 +107,6 @@ public class CompleteProfileController extends HttpServlet {
         } catch (SQLException e) {
             e.printStackTrace();
             request.setAttribute("error", "Lỗi khi cập nhật hồ sơ: " + e.getMessage());
-            redirectToCompleteProfile(user.getRole(), request, response);
-        } catch (IllegalArgumentException e) {
-            request.setAttribute("error", "Ngày sinh hoặc số điện thoại không hợp lệ.");
             redirectToCompleteProfile(user.getRole(), request, response);
         }
     }

@@ -103,9 +103,7 @@
             alert('Nâng cấp kế hoạch. (Chưa triển khai)');
         }
 
-        function signOut() {
-            alert('Đăng xuất. (Chưa triển khai)');
-        }
+
     </script>
 </body>
 </html>

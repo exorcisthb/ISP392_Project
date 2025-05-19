@@ -26,6 +26,13 @@ public class UserDAO {
             }
         }
     }
+ // Validate email: must end with @gmail.com
+    private void validateEmail(String email) throws SQLException {
+        if (email == null || email.trim().isEmpty() || !email.endsWith("@gmail.com") || email.equals("@gmail.com")) {
+            throw new SQLException("Email phải có đuôi @gmail.com.");
+        }
+    }
+
 
     // Kiểm tra số điện thoại đã tồn tại chưa (chỉ kiểm tra nếu phone không null)
     public boolean isPhoneExists(String phone) throws SQLException {
