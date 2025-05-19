@@ -16,7 +16,7 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/LoginCSS/LoginCSS.css">
         <title>Hệ thống quản lí phòng khám đa khoa</title>
-      </head>
+    </head>
     <body>
         <div class="wrapper">
             <nav class="nav">
@@ -63,6 +63,20 @@
                             <label><a href="#">Quên mật khẩu?</a></label>
                         </div>
                     </div>
+
+                    <c:if test="${not empty logoutMessage}">
+                        <div class="success" style="color: green; margin-top: 10px;">
+                            ${logoutMessage}
+                        </div>
+                        <c:remove var="logoutMessage" scope="session" />
+                    </c:if>
+
+                    <c:if test="${not empty error}">  
+                        <div class="error" style="color: red;">${error}</div>
+                    </c:if>
+                    <c:if test="${not empty successMessage}">
+                        <div class="success" style="color: green;">${successMessage}</div>
+                    </c:if>
                     <c:if test="${not empty error}">
                         <div class="error" style="color: red;">${error}</div>
                     </c:if>
