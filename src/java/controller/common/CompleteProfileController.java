@@ -55,6 +55,13 @@ public class CompleteProfileController extends HttpServlet {
                 return;
             }
 
+            // Validate phone number
+            if (!phone.matches("\\d{10}")) {
+                request.setAttribute("error", "Số điện thoại phải có đúng 10 chữ số.");
+                redirectToCompleteProfile(user.getRole(), request, response);
+                return;
+            }
+
             // Cập nhật thông tin user
             user.setFullName(fullName);
             user.setDob(Date.valueOf(dobStr));
@@ -75,7 +82,7 @@ public class CompleteProfileController extends HttpServlet {
             request.setAttribute("error", "Lỗi khi cập nhật hồ sơ: " + e.getMessage());
             redirectToCompleteProfile(user.getRole(), request, response);
         } catch (IllegalArgumentException e) {
-            request.setAttribute("error", "Ngày sinh không hợp lệ.");
+            request.setAttribute("error", "Ngày sinh hoặc số điện thoại không hợp lệ.");
             redirectToCompleteProfile(user.getRole(), request, response);
         }
     }

@@ -45,7 +45,12 @@ public class UserService {
     public boolean isEmailOrUsernameExists(String email, String username) throws SQLException {
         return userDAO.isEmailOrUsernameExists(email, username);
     }
-
+// Validate phone number: must be exactly 10 digits or null/empty
+    private void validatePhoneNumber(String phone) throws IllegalArgumentException {
+        if (phone != null && !phone.trim().isEmpty() && !phone.matches("\\d{10}")) {
+            throw new IllegalArgumentException("Phone number must be exactly 10 digits.");
+        }
+    }
     // Xác thực người dùng khi đăng nhập
     public Users authenticateUser(String emailOrUsername, String password) throws SQLException {
         Users user = userDAO.findUserByEmailOrUsername(emailOrUsername);
