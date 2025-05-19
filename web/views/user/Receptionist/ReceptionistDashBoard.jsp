@@ -73,9 +73,7 @@
         }
 
 
-        function signOut() {
-            alert('Đăng xuất. (Chưa triển khai)');
-        }
+     
     </script>
 </body>
 </html>
