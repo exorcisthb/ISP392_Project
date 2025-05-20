@@ -41,10 +41,6 @@
             <input type="tel" id="phone" name="phone" required>
         </div>
         <div class="form-group">
-            <label for="address">Địa chỉ:</label>
-            <input type="text" id="address" name="address" required>
-        </div>
-        <div class="form-group">
             <label for="specialization">Chuyên môn:</label>
             <select>            
                 <option>Chuyên Khoa</option>
