@@ -137,4 +137,24 @@ public class AdminDAO {
     }
     return -1;
 }
+     public void updateAdmin(Admins admin) throws SQLException {
+        String sql = "UPDATE Admins SET fullName = ?, email = ?, username = ?, updatedAt = ? WHERE adminID = ?";
+        try (Connection conn = dbContext.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, admin.getFullName());
+            stmt.setString(2, admin.getEmail());
+            stmt.setString(3, admin.getUsername());
+            stmt.setDate(4, new Date(System.currentTimeMillis()));
+            stmt.setInt(5, admin.getAdminID());
+
+            int rows = stmt.executeUpdate();
+            if (rows == 0) {
+                throw new SQLException("Không tìm thấy admin để cập nhật.");
+            }
+            System.out.println("AdminDAO: Cập nhật admin thành công, rows affected: " + rows);
+        } catch (SQLException e) {
+            System.err.println("AdminDAO: Lỗi khi cập nhật admin: " + e.getMessage());
+            throw e;
+        }
+    }
 }

@@ -78,4 +78,8 @@ public class AdminService {
 
         adminDAO.createAdmin(admin); // DAO tự hash password
     }
+    public void updateAdminProfile(Admins admin) throws SQLException {
+        adminDAO.updateAdmin(admin); // Gọi phương thức từ DAO
+        System.out.println("AdminService: Cập nhật admin thành công qua DAO.");
+    }
 }
