@@ -157,4 +157,26 @@ public class AdminDAO {
             throw e;
         }
     }
+      public Admins getAdminById(int adminID) throws SQLException {
+    String sql = "SELECT * FROM Admins WHERE adminID = ?";
+    try (Connection conn = dbContext.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(sql)) {
+        stmt.setInt(1, adminID);
+        try (ResultSet rs = stmt.executeQuery()) {
+            if (rs.next()) {
+                Admins admin = new Admins();
+                admin.setAdminID(rs.getInt("adminID"));
+                admin.setUsername(rs.getString("username"));
+                admin.setPassword(rs.getString("password"));
+                admin.setFullName(rs.getString("fullName"));
+                admin.setEmail(rs.getString("email"));
+                admin.setStatus(rs.getString("status"));
+                admin.setCreatedAt(rs.getDate("createdAt"));
+                admin.setUpdatedAt(rs.getDate("updatedAt"));
+                return admin;
+            }
+        }
+    }
+    return null;
+}
 }

@@ -167,4 +167,34 @@ public class UserDAO {
         // Implement password hashing (e.g., using BCrypt)
         return password; // Replace with actual hashing logic (e.g., BCrypt.hashpw(password, BCrypt.gensalt()))
     }
+     public Users getUserByID(int userID) throws SQLException {
+    String sql = "SELECT * FROM Users WHERE userID = ?";
+    try (Connection conn = dbContext.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(sql)) {
+        stmt.setInt(1, userID);
+        try (ResultSet rs = stmt.executeQuery()) {
+            if (rs.next()) {
+                Users user = new Users();
+                user.setUserID(rs.getInt("userID"));
+                user.setUsername(rs.getString("username"));
+                user.setPassword(rs.getString("password"));
+                user.setEmail(rs.getString("email"));
+                user.setFullName(rs.getString("fullName"));
+                user.setDob(rs.getDate("dob"));
+                user.setGender(rs.getString("gender"));
+                user.setPhone(rs.getString("phone"));
+                user.setAddress(rs.getString("address"));
+                user.setMedicalHistory(rs.getString("medicalHistory"));
+                user.setSpecialization(rs.getString("specialization"));
+                user.setRole(rs.getString("role"));
+                user.setStatus(rs.getString("status"));
+                user.setCreatedBy(rs.getInt("createdBy"));
+                user.setCreatedAt(rs.getDate("createdAt"));
+                user.setUpdatedAt(rs.getDate("updatedAt"));
+                return user;
+            }
+        }
+    }
+    return null;
+}
 }

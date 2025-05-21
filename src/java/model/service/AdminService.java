@@ -82,4 +82,7 @@ public class AdminService {
         adminDAO.updateAdmin(admin); // Gọi phương thức từ DAO
         System.out.println("AdminService: Cập nhật admin thành công qua DAO.");
     }
+     public Admins getAdminById(int adminID) throws SQLException {
+        return adminDAO.getAdminById(adminID);
+    }
 }

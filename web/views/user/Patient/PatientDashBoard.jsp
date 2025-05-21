@@ -17,7 +17,7 @@
                     <span class="text-gray-700">👤</span>
                 </button>
                 <div id="userMenu" class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg hidden z-10">                 
-                    <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100" onclick="viewProfile()">View Profile</a>
+                    <a href="${pageContext.request.contextPath}/UserProfileController" class="block px-4 py-2 text-gray-700 hover:bg-gray-100" onclick="viewProfile()">View Profile</a>
                     <a href="${pageContext.request.contextPath}/EditProfileUserController" class="block px-4 py-2 text-gray-700 hover:bg-gray-100" onclick="editProfile()">Edit Profile</a>
                     <a href="${pageContext.request.contextPath}/LogoutServlet" class="block px-4 py-2 text-gray-700 hover:bg-gray-100" onclick="signOut()">Sign Out</a>
                 </div>
@@ -88,11 +88,7 @@
             }
         });
 
-        // Menu item functions
-        function viewProfile() {
-            alert('Xem thông tin profile. (Chưa triển khai)');
-        }
-
+      
 
         function reportIssue() {
             alert('Báo cáo vấn đề. (Chưa triển khai)');

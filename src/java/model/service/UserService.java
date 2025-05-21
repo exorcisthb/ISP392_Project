@@ -151,4 +151,7 @@ public class UserService {
         String hashedPassword = BCrypt.hashpw(newPassword, BCrypt.gensalt());
         return userDAO.updatePassword(email, hashedPassword);
     }
+      public Users getUserByID(int userID) throws SQLException {
+           return userDAO.getUserByID(userID);
+}
 }
