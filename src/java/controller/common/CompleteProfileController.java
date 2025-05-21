@@ -41,7 +41,7 @@ public class CompleteProfileController extends HttpServlet {
             String dobStr = request.getParameter("dob");
             String gender = request.getParameter("gender");
             String phone = request.getParameter("phone");
-            String address = request.getParameter("address");
+            String address = request.getParameter("address"); // Optional field
             String medicalHistory = request.getParameter("medicalHistory"); // Chỉ cho Patient
             String specialization = request.getParameter("specialization"); // Chỉ cho Doctor/Nurse
 
@@ -54,12 +54,11 @@ public class CompleteProfileController extends HttpServlet {
             request.setAttribute("medicalHistory", medicalHistory);
             request.setAttribute("specialization", specialization);
 
-            // Validate dữ liệu
+            // Validate dữ liệu (address is optional, so not checked here)
             if (fullName == null || fullName.trim().isEmpty() ||
                 dobStr == null || dobStr.trim().isEmpty() ||
                 gender == null || gender.trim().isEmpty() ||
-                phone == null || phone.trim().isEmpty() ||
-                address == null || address.trim().isEmpty()) {
+                phone == null || phone.trim().isEmpty()) {
                 request.setAttribute("error", "Vui lòng điền đầy đủ các trường bắt buộc.");
                 redirectToCompleteProfile(user.getRole(), request, response);
                 return;
@@ -76,7 +75,7 @@ public class CompleteProfileController extends HttpServlet {
             Date dob;
             try {
                 dob = Date.valueOf(dobStr);
-                LocalDate currentDate = LocalDate.now(); // Current date: 19/05/2025
+                LocalDate currentDate = LocalDate.now(); // Current date: 09:07 PM +07 on Wednesday, May 21, 2025
                 LocalDate dobDate = dob.toLocalDate();
                 if (dobDate.isAfter(currentDate)) {
                     request.setAttribute("error", "Năm sinh không được vượt quá thời gian thực.");
@@ -89,14 +88,26 @@ public class CompleteProfileController extends HttpServlet {
                 return;
             }
 
+            // Validate specialization for Doctor/Nurse
+            if ("doctor".equalsIgnoreCase(user.getRole()) || "nurse".equalsIgnoreCase(user.getRole())) {
+                if (specialization == null || specialization.trim().isEmpty()) {
+                    request.setAttribute("error", "Vui lòng chọn trình độ chuyên môn.");
+                    redirectToCompleteProfile(user.getRole(), request, response);
+                    return;
+                }
+            }
+
+            // Map Vietnamese gender values to database-accepted values
+            String mappedGender = mapGender(gender);
+
             // Cập nhật thông tin user
             user.setFullName(fullName);
             user.setDob(dob);
-            user.setGender(gender);
+            user.setGender(mappedGender);
             user.setPhone(phone);
-            user.setAddress(address);
-            user.setMedicalHistory(medicalHistory != null ? medicalHistory : "");
-            user.setSpecialization(specialization != null ? specialization : "");
+            user.setAddress(address != null && !address.trim().isEmpty() ? address : null); // Optional, set to null if empty
+            user.setMedicalHistory("patient".equalsIgnoreCase(user.getRole()) ? (medicalHistory != null ? medicalHistory : "") : null);
+            user.setSpecialization(("doctor".equalsIgnoreCase(user.getRole()) || "nurse".equalsIgnoreCase(user.getRole())) ? specialization : null);
 
             // Gọi service để cập nhật vào database
             userService.updateUserProfile(user);
@@ -108,6 +119,20 @@ public class CompleteProfileController extends HttpServlet {
             e.printStackTrace();
             request.setAttribute("error", "Lỗi khi cập nhật hồ sơ: " + e.getMessage());
             redirectToCompleteProfile(user.getRole(), request, response);
+        }
+    }
+
+    private String mapGender(String gender) {
+        if (gender == null) return null;
+        switch (gender.trim().toLowerCase()) {
+            case "nam":
+                return "Male";
+            case "nữ":
+                return "Female";
+            case "khác":
+                return "Other";
+            default:
+                return gender; // Return as-is if no match (though this should be validated)
         }
     }
 

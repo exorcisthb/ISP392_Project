@@ -8,11 +8,11 @@
 </head>
 <body class="bg-light">
 <div class="container mt-5">
-    <h2 class="text-center mb-4">Danh sách bác sĩ</h2>
+    <h2 class="text-center mb-4">Danh sách Bác Sĩ / Y Tá </h2>
 
     <div class="d-flex justify-content-between mb-3">
         <input type="text" class="form-control w-50 me-2" placeholder="Tìm theo tên hoặc chuyên khoa..." id="searchInput">
-        <a href="addDoctor.jsp" class="btn btn-success">Thêm bác sĩ</a>
+        <a href="AddDoctorNurse.jsp" class="btn btn-success">Thêm bác sĩ / Y Tá </a>
     </div>
 
     <table class="table table-bordered table-hover">
@@ -33,6 +33,7 @@
             <td>Nữ</td>
             <td>Nội khoa</td>
             <td>15/05/1980</td>
+            <td></td>
             <td class="text-center d-flex justify-content-center gap-1">
                 <a href="viewDoctor.jsp?id=1" class="btn btn-sm btn-info text-white">Xem chi tiết</a>
                 <a href="editDoctor.jsp?id=1" class="btn btn-sm btn-primary">Sửa</a>

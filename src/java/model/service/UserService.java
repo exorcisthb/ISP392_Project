@@ -81,45 +81,6 @@ public class UserService {
         userDAO.updateUserProfile(user);
     }
 
-    // Cập nhật thông tin nhân viên
-    public void addEmployee(String emailOrUsername, String fullName, String specialization, 
-                           String phone, String dobStr, String gender, String address, int adminId) throws Exception {
-        // Tìm người dùng
-        Users user = userDAO.findUserByEmailOrUsername(emailOrUsername);
-        if (user == null) {
-            throw new Exception("Không tìm thấy người dùng với email hoặc username: " + emailOrUsername);
-        }
-
-        // Kiểm tra vai trò
-        if (!user.getRole().equals("Doctor") && !user.getRole().equals("Nurse") && !user.getRole().equals("Receptionist")) {
-            throw new Exception("Người dùng không có vai trò nhân viên: " + user.getRole());
-        }
-
-        // Kiểm tra trạng thái
-        if (user.getStatus().equals("Active")) {
-            throw new Exception("Tài khoản nhân viên đã được kích hoạt!");
-        }
-
-        // Kiểm tra số điện thoại
-        if (phone != null && !phone.trim().isEmpty() && userDAO.isPhoneExists(phone)) {
-            throw new Exception("Số điện thoại đã được sử dụng!");
-        }
-
-        // Cập nhật thông tin
-        user.setFullName(fullName);
-        user.setSpecialization(specialization.isEmpty() ? null : specialization);
-        user.setPhone(phone.isEmpty() ? null : phone);
-        user.setDob(dobStr.isEmpty() ? null : java.sql.Date.valueOf(dobStr));
-        user.setGender(gender.isEmpty() ? null : gender);
-        user.setAddress(address.isEmpty() ? null : address);
-
-        // Gọi DAO để cập nhật
-        boolean updated = userDAO.updateEmployeeRole(user, adminId);
-        if (!updated) {
-            throw new Exception("Không thể cập nhật thông tin nhân viên!");
-        }
-    }
-
     // Validate email: must end with @gmail.com
     private void validateEmail(String email) throws IllegalArgumentException {
         if (email == null || email.trim().isEmpty() || !email.endsWith("@gmail.com") || email.equals("@gmail.com")) {
@@ -129,7 +90,7 @@ public class UserService {
 
     // Validate DOB: must not exceed current date
     private void validateDob(Date dob) throws IllegalArgumentException {
-        LocalDate currentDate = LocalDate.now(); // Current date: 01:20 PM +07 on Wednesday, May 21, 2025
+        LocalDate currentDate = LocalDate.now(); // Current date: 09:30 PM +07 on Wednesday, May 21, 2025
         LocalDate dobDate = dob.toLocalDate();
         if (dobDate.isAfter(currentDate)) {
             throw new IllegalArgumentException("Năm sinh không được vượt quá thời gian thực.");
@@ -151,7 +112,40 @@ public class UserService {
         String hashedPassword = BCrypt.hashpw(newPassword, BCrypt.gensalt());
         return userDAO.updatePassword(email, hashedPassword);
     }
-      public Users getUserByID(int userID) throws SQLException {
-           return userDAO.getUserByID(userID);
-}
+
+    public Users getUserByID(int userID) throws SQLException {
+        return userDAO.getUserByID(userID);
+    }
+
+    // New method to add employee
+    public boolean addEmployee(String fullName, String gender, Date dob, String specialization, String role, String status, String email, String phone, String address, int createdBy) throws SQLException {
+        // Validate inputs
+        validateEmail(email);
+        validatePhoneNumber(phone);
+        validateDob(dob);
+
+        // Check for existing email or phone
+        if (userDAO.isEmailOrUsernameExists(email, null)) {
+            return false;
+        }
+        if (phone != null && !phone.trim().isEmpty() && userDAO.isPhoneExists(phone)) {
+            return false;
+        }
+
+        // Create Users object
+        Users user = new Users();
+        user.setFullName(fullName);
+        user.setGender(gender);
+        user.setDob(dob);
+        user.setSpecialization(specialization);
+        user.setRole(role);
+        user.setStatus(status);
+        user.setEmail(email);
+        user.setPhone(phone);
+        user.setAddress(address);
+        user.setCreatedBy(createdBy);
+
+        // Call DAO to add employee
+        return userDAO.addEmployee(user, createdBy);
+    }
 }

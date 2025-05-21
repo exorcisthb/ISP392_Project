@@ -64,7 +64,7 @@ public class UserDAO {
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, user.getUsername());
             stmt.setString(2, user.getEmail());
-            stmt.setString(3, user.getPassword());
+            stmt.setString(3, user.getPassword()); // Already hashed in Service
             stmt.setString(4, user.getRole());
             stmt.setString(5, user.getPhone());
             stmt.setObject(6, user.getCreatedBy(), java.sql.Types.INTEGER);
@@ -128,35 +128,14 @@ public class UserDAO {
         }
     }
 
-    // Cập nhật thông tin nhân viên và trạng thái
-    public boolean updateEmployeeRole(Users user, int adminId) throws SQLException {
-        String sql = "UPDATE Users SET status = 'Active', fullName = ?, specialization = ?, phone = ?, dob = ?, " +
-                     "gender = ?, address = ?, createdBy = ?, updatedAt = GETDATE() WHERE userID = ?";
-        try (Connection conn = dbContext.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, user.getFullName());
-            stmt.setString(2, user.getSpecialization());
-            stmt.setString(3, user.getPhone());
-            stmt.setDate(4, user.getDob());
-            stmt.setString(5, user.getGender());
-            stmt.setString(6, user.getAddress());
-            stmt.setObject(7, adminId, java.sql.Types.INTEGER);
-            stmt.setInt(8, user.getUserID());
-            return stmt.executeUpdate() > 0;
-        } catch (SQLException e) {
-            System.err.println("SQL Error in updateEmployeeRole: " + e.getMessage());
-            throw e;
-        }
-    }
-
-    // New method to update password (since no existing method fits)
+    // New method to update password
     public boolean updatePassword(String email, String newPassword) throws SQLException {
         validateEmail(email);
         validatePassword(newPassword);
         String sql = "UPDATE Users SET [password] = ?, updatedAt = GETDATE() WHERE email = ?";
         try (Connection conn = dbContext.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, hashPassword(newPassword));
+            stmt.setString(1, newPassword); // Already hashed in Service
             stmt.setString(2, email);
             return stmt.executeUpdate() > 0;
         }
@@ -167,34 +146,60 @@ public class UserDAO {
         // Implement password hashing (e.g., using BCrypt)
         return password; // Replace with actual hashing logic (e.g., BCrypt.hashpw(password, BCrypt.gensalt()))
     }
-     public Users getUserByID(int userID) throws SQLException {
-    String sql = "SELECT * FROM Users WHERE userID = ?";
-    try (Connection conn = dbContext.getConnection();
-         PreparedStatement stmt = conn.prepareStatement(sql)) {
-        stmt.setInt(1, userID);
-        try (ResultSet rs = stmt.executeQuery()) {
-            if (rs.next()) {
-                Users user = new Users();
-                user.setUserID(rs.getInt("userID"));
-                user.setUsername(rs.getString("username"));
-                user.setPassword(rs.getString("password"));
-                user.setEmail(rs.getString("email"));
-                user.setFullName(rs.getString("fullName"));
-                user.setDob(rs.getDate("dob"));
-                user.setGender(rs.getString("gender"));
-                user.setPhone(rs.getString("phone"));
-                user.setAddress(rs.getString("address"));
-                user.setMedicalHistory(rs.getString("medicalHistory"));
-                user.setSpecialization(rs.getString("specialization"));
-                user.setRole(rs.getString("role"));
-                user.setStatus(rs.getString("status"));
-                user.setCreatedBy(rs.getInt("createdBy"));
-                user.setCreatedAt(rs.getDate("createdAt"));
-                user.setUpdatedAt(rs.getDate("updatedAt"));
-                return user;
+
+    public Users getUserByID(int userID) throws SQLException {
+        String sql = "SELECT * FROM Users WHERE userID = ?";
+        try (Connection conn = dbContext.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, userID);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    Users user = new Users();
+                    user.setUserID(rs.getInt("userID"));
+                    user.setUsername(rs.getString("username"));
+                    user.setPassword(rs.getString("password"));
+                    user.setEmail(rs.getString("email"));
+                    user.setFullName(rs.getString("fullName"));
+                    user.setDob(rs.getDate("dob"));
+                    user.setGender(rs.getString("gender"));
+                    user.setPhone(rs.getString("phone"));
+                    user.setAddress(rs.getString("address"));
+                    user.setMedicalHistory(rs.getString("medicalHistory"));
+                    user.setSpecialization(rs.getString("specialization"));
+                    user.setRole(rs.getString("role"));
+                    user.setStatus(rs.getString("status"));
+                    user.setCreatedBy(rs.getInt("createdBy"));
+                    user.setCreatedAt(rs.getDate("createdAt"));
+                    user.setUpdatedAt(rs.getDate("updatedAt"));
+                    return user;
+                }
             }
         }
+        return null;
     }
-    return null;
-}
+
+    // New method to add employee
+    public boolean addEmployee(Users user, int createdBy) throws SQLException {
+        validateEmail(user.getEmail());
+        if (isEmailOrUsernameExists(user.getEmail(), null) || isPhoneExists(user.getPhone())) {
+            throw new SQLException("Email hoặc số điện thoại đã tồn tại.");
+        }
+        String sql = "INSERT INTO Users (fullName, gender, dob, specialization, role, status, email, phone, address, createdBy, createdAt) " +
+                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, GETDATE())";
+        try (Connection conn = dbContext.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, user.getFullName() != null ? user.getFullName().trim() : "");
+            stmt.setString(2, user.getGender() != null ? user.getGender().trim() : "");
+            stmt.setDate(3, user.getDob());
+            stmt.setString(4, user.getSpecialization() != null ? user.getSpecialization().trim() : "");
+            stmt.setString(5, user.getRole() != null ? user.getRole().trim() : "");
+            stmt.setString(6, user.getStatus() != null ? user.getStatus().trim() : "Hoạt động");
+            stmt.setString(7, user.getEmail() != null ? user.getEmail().trim() : "");
+            stmt.setString(8, user.getPhone() != null ? user.getPhone().trim() : "");
+            stmt.setString(9, user.getAddress() != null ? user.getAddress().trim() : "");
+            stmt.setObject(10, createdBy, java.sql.Types.INTEGER);
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
+        }
+    }
 }
