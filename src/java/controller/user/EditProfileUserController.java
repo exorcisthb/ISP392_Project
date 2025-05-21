@@ -12,7 +12,7 @@ import model.entity.Users;
 import model.service.UserService;
 
 @WebServlet(name = "EditProfileUserController", urlPatterns = {"/EditProfileUserController"})
-public class EditProfileController extends HttpServlet {
+public class EditProfileUserController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)

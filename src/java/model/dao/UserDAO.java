@@ -26,13 +26,21 @@ public class UserDAO {
             }
         }
     }
- // Validate email: must end with @gmail.com
+
+    // Validate email: must end with @gmail.com
     private void validateEmail(String email) throws SQLException {
         if (email == null || email.trim().isEmpty() || !email.endsWith("@gmail.com") || email.equals("@gmail.com")) {
             throw new SQLException("Email phải có đuôi @gmail.com.");
         }
     }
 
+    // Validate password: at least 8 chars, 1 uppercase, 1 special char, 1 digit
+    private void validatePassword(String password) throws SQLException {
+        if (password == null || password.length() < 8 ||
+            !password.matches("^(?=.*[A-Z])(?=.*[!@#$%^&*])(?=.*\\d).+$")) {
+            throw new SQLException("Mật khẩu phải có ít nhất 8 ký tự, 1 chữ cái in hoa, 1 ký tự đặc biệt và 1 số.");
+        }
+    }
 
     // Kiểm tra số điện thoại đã tồn tại chưa (chỉ kiểm tra nếu phone không null)
     public boolean isPhoneExists(String phone) throws SQLException {
@@ -49,6 +57,8 @@ public class UserDAO {
 
     // Đăng ký tài khoản cơ bản vào bảng Users
     public boolean registerUserBasic(Users user) throws SQLException {
+        validateEmail(user.getEmail());
+        validatePassword(user.getPassword());
         String sql = "INSERT INTO Users (username, email, password, role, phone, createdBy, createdAt) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = dbContext.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -137,5 +147,24 @@ public class UserDAO {
             System.err.println("SQL Error in updateEmployeeRole: " + e.getMessage());
             throw e;
         }
+    }
+
+    // New method to update password (since no existing method fits)
+    public boolean updatePassword(String email, String newPassword) throws SQLException {
+        validateEmail(email);
+        validatePassword(newPassword);
+        String sql = "UPDATE Users SET [password] = ?, updatedAt = GETDATE() WHERE email = ?";
+        try (Connection conn = dbContext.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, hashPassword(newPassword));
+            stmt.setString(2, email);
+            return stmt.executeUpdate() > 0;
+        }
+    }
+
+    // Placeholder for password hashing
+    private String hashPassword(String password) {
+        // Implement password hashing (e.g., using BCrypt)
+        return password; // Replace with actual hashing logic (e.g., BCrypt.hashpw(password, BCrypt.gensalt()))
     }
 }

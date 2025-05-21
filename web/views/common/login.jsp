@@ -60,7 +60,7 @@
                             <label for="login-check">Ghi nhớ</label>
                         </div>
                         <div class="two">
-                            <label><a href="#">Quên mật khẩu?</a></label>
+                            <label><a href="views/common/forgotPassword.jsp">Quên mật khẩu?</a></label>
                         </div>
                     </div>
 

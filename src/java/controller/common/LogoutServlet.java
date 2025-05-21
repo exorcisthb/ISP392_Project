@@ -20,9 +20,11 @@ public class LogoutServlet extends HttpServlet {
             session.invalidate();
         }
 
-       HttpSession newSession = request.getSession(true);
+        // Tạo session mới để lưu thông báo
+        HttpSession newSession = request.getSession(true);
         newSession.setAttribute("logoutMessage", "Bạn đã đăng xuất thành công!");
-        response.sendRedirect(request.getContextPath() + "/views/common/login.jsp");
+        // Chuyển hướng về trang gốc (root) thay vì login.jsp
+        response.sendRedirect(request.getContextPath() + "/");
     }
 
     @Override

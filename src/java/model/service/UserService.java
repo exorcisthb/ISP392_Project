@@ -25,7 +25,8 @@ public class UserService {
             return false;
         }
 
-        // Mã hóa mật khẩu
+        // Mã hóa và validate mật khẩu
+        validatePassword(password);
         String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
 
         // Tạo đối tượng user
@@ -36,7 +37,7 @@ public class UserService {
         user.setRole(role);
         user.setPhone(phone);
         user.setCreatedAt(new Date(System.currentTimeMillis()));
-        user.setCreatedBy(null); // Dòng 38 - Đã sửa trong Users.java nên không còn lỗi
+        user.setCreatedBy(null);
 
         // Gọi DAO để lưu vào DB
         return userDAO.registerUserBasic(user);
@@ -46,12 +47,14 @@ public class UserService {
     public boolean isEmailOrUsernameExists(String email, String username) throws SQLException {
         return userDAO.isEmailOrUsernameExists(email, username);
     }
-// Validate phone number: must be exactly 10 digits or null/empty
+
+    // Validate phone number: must be exactly 10 digits or null/empty
     private void validatePhoneNumber(String phone) throws IllegalArgumentException {
         if (phone != null && !phone.trim().isEmpty() && !phone.matches("\\d{10}")) {
             throw new IllegalArgumentException("Phone number must be exactly 10 digits.");
         }
     }
+
     // Xác thực người dùng khi đăng nhập
     public Users authenticateUser(String emailOrUsername, String password) throws SQLException {
         Users user = userDAO.findUserByEmailOrUsername(emailOrUsername);
@@ -77,6 +80,7 @@ public class UserService {
     public void updateUserProfile(Users user) throws SQLException {
         userDAO.updateUserProfile(user);
     }
+
     // Cập nhật thông tin nhân viên
     public void addEmployee(String emailOrUsername, String fullName, String specialization, 
                            String phone, String dobStr, String gender, String address, int adminId) throws Exception {
@@ -115,18 +119,36 @@ public class UserService {
             throw new Exception("Không thể cập nhật thông tin nhân viên!");
         }
     }
-     // Validate email: must end with @gmail.com
+
+    // Validate email: must end with @gmail.com
     private void validateEmail(String email) throws IllegalArgumentException {
         if (email == null || email.trim().isEmpty() || !email.endsWith("@gmail.com") || email.equals("@gmail.com")) {
             throw new IllegalArgumentException("Email phải có đuôi @gmail.com.");
         }
     }
+
     // Validate DOB: must not exceed current date
     private void validateDob(Date dob) throws IllegalArgumentException {
-        LocalDate currentDate = LocalDate.now(); // Current date: 19/05/2025
+        LocalDate currentDate = LocalDate.now(); // Current date: 01:20 PM +07 on Wednesday, May 21, 2025
         LocalDate dobDate = dob.toLocalDate();
         if (dobDate.isAfter(currentDate)) {
             throw new IllegalArgumentException("Năm sinh không được vượt quá thời gian thực.");
         }
+    }
+
+    // Validate password: at least 8 chars, 1 uppercase, 1 special char, 1 digit
+    private void validatePassword(String password) throws IllegalArgumentException {
+        if (password == null || password.length() < 8 ||
+            !password.matches("^(?=.*[A-Z])(?=.*[!@#$%^&*])(?=.*\\d).+$")) {
+            throw new IllegalArgumentException("Mật khẩu phải có ít nhất 8 ký tự, 1 chữ cái in hoa, 1 ký tự đặc biệt và 1 số.");
+        }
+    }
+
+    // New method to update password
+    public boolean updatePassword(String email, String newPassword) throws SQLException {
+        validateEmail(email);
+        validatePassword(newPassword);
+        String hashedPassword = BCrypt.hashpw(newPassword, BCrypt.gensalt());
+        return userDAO.updatePassword(email, hashedPassword);
     }
 }
