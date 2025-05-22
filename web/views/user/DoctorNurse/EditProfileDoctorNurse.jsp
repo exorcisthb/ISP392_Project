@@ -60,7 +60,8 @@
         </style>
     </head>
     <body>
- 
+         <div class="form-container">
+
         <c:if test="${not empty success}">
             <div class="message success">${success}</div>
         </c:if>
@@ -98,5 +99,7 @@
             </a>
 
         </form>
+         </div>
     </body>
+   
 </html>

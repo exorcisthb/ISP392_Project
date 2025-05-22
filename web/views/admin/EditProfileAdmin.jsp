@@ -62,6 +62,14 @@
 </head>
 <body>
     <div class="form-container">
+        
+        <c:if test="${not empty success}">
+            <div class="message success">${success}</div>
+        </c:if>
+        <c:if test="${not empty error}">
+            <div class="message error">${error}</div>
+        </c:if>
+
         <h2>Chỉnh sửa hồ sơ Admin</h2>
 
         <%
@@ -72,14 +80,6 @@
             }
             request.setAttribute("admin", admin);
         %>
-
-        <c:if test="${not empty success}">
-            <div class="message success">${success}</div>
-        </c:if>
-        <c:if test="${not empty error}">
-            <div class="message error">${error}</div>
-        </c:if>
-
         <form action="EditProfileAdminController" method="post">
             <label>Tên đăng nhập:</label>
             <input type="text" name="username" value="${admin.username}" required>
