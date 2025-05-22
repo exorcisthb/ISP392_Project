@@ -118,34 +118,37 @@ public class UserService {
     }
 
     // New method to add employee
-    public boolean addEmployee(String fullName, String gender, Date dob, String specialization, String role, String status, String email, String phone, String address, int createdBy) throws SQLException {
-        // Validate inputs
-        validateEmail(email);
-        validatePhoneNumber(phone);
-        validateDob(dob);
+  // New method to add employee
+public boolean addUser(String fullName, String gender, Date dob, String specialization, String role, String status, String email, String phone, String address, String username, String password, int createdBy) throws SQLException {
+    // Validate inputs
+    validateEmail(email);
+    validatePhoneNumber(phone);
+    validateDob(dob);
 
-        // Check for existing email or phone
-        if (userDAO.isEmailOrUsernameExists(email, null)) {
-            return false;
-        }
-        if (phone != null && !phone.trim().isEmpty() && userDAO.isPhoneExists(phone)) {
-            return false;
-        }
-
-        // Create Users object
-        Users user = new Users();
-        user.setFullName(fullName);
-        user.setGender(gender);
-        user.setDob(dob);
-        user.setSpecialization(specialization);
-        user.setRole(role);
-        user.setStatus(status);
-        user.setEmail(email);
-        user.setPhone(phone);
-        user.setAddress(address);
-        user.setCreatedBy(createdBy);
-
-        // Call DAO to add employee
-        return userDAO.addEmployee(user, createdBy);
+    // Check for existing email, username, or phone
+    if (userDAO.isEmailOrUsernameExists(email, username)) {
+        return false;
     }
+    if (phone != null && !phone.trim().isEmpty() && userDAO.isPhoneExists(phone)) {
+        return false;
+    }
+
+    // Create Users object
+    Users user = new Users();
+    user.setFullName(fullName);
+    user.setGender(gender);
+    user.setDob(dob);
+    user.setSpecialization(specialization);
+    user.setRole(role);
+    user.setStatus(status);
+    user.setEmail(email);
+    user.setPhone(phone);
+    user.setAddress(address);
+    user.setUsername(username);
+    user.setPassword(password); // Consider encrypting password here if needed
+    user.setCreatedBy(createdBy);
+
+    // Call DAO to add employee
+    return userDAO.addUser(user, createdBy);
+}
 }

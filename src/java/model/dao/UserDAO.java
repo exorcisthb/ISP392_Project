@@ -179,27 +179,29 @@ public class UserDAO {
     }
 
     // New method to add employee
-    public boolean addEmployee(Users user, int createdBy) throws SQLException {
-        validateEmail(user.getEmail());
-        if (isEmailOrUsernameExists(user.getEmail(), null) || isPhoneExists(user.getPhone())) {
-            throw new SQLException("Email hoặc số điện thoại đã tồn tại.");
-        }
-        String sql = "INSERT INTO Users (fullName, gender, dob, specialization, role, status, email, phone, address, createdBy, createdAt) " +
-                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, GETDATE())";
-        try (Connection conn = dbContext.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, user.getFullName() != null ? user.getFullName().trim() : "");
-            stmt.setString(2, user.getGender() != null ? user.getGender().trim() : "");
-            stmt.setDate(3, user.getDob());
-            stmt.setString(4, user.getSpecialization() != null ? user.getSpecialization().trim() : "");
-            stmt.setString(5, user.getRole() != null ? user.getRole().trim() : "");
-            stmt.setString(6, user.getStatus() != null ? user.getStatus().trim() : "Hoạt động");
-            stmt.setString(7, user.getEmail() != null ? user.getEmail().trim() : "");
-            stmt.setString(8, user.getPhone() != null ? user.getPhone().trim() : "");
-            stmt.setString(9, user.getAddress() != null ? user.getAddress().trim() : "");
-            stmt.setObject(10, createdBy, java.sql.Types.INTEGER);
-            int rowsAffected = stmt.executeUpdate();
-            return rowsAffected > 0;
-        }
+   public boolean addUser(Users user, int createdBy) throws SQLException {
+    validateEmail(user.getEmail());
+    if (isEmailOrUsernameExists(user.getEmail(), user.getUsername()) || isPhoneExists(user.getPhone())) {
+        throw new SQLException("Email, username hoặc số điện thoại đã tồn tại.");
     }
+    String sql = "INSERT INTO Users (fullName, gender, dob, specialization, role, status, email, phone, address, username, password, createdBy, createdAt) " +
+                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, GETDATE())";
+    try (Connection conn = dbContext.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(sql)) {
+        stmt.setString(1, user.getFullName() != null ? user.getFullName().trim() : "");
+        stmt.setString(2, user.getGender() != null ? user.getGender().trim() : "");
+        stmt.setDate(3, user.getDob());
+        stmt.setString(4, user.getSpecialization() != null ? user.getSpecialization().trim() : "");
+        stmt.setString(5, user.getRole() != null ? user.getRole().trim() : "");
+        stmt.setString(6, user.getStatus() != null ? user.getStatus().trim() : "Hoạt động");
+        stmt.setString(7, user.getEmail() != null ? user.getEmail().trim() : "");
+        stmt.setString(8, user.getPhone() != null ? user.getPhone().trim() : "");
+        stmt.setString(9, user.getAddress() != null ? user.getAddress().trim() : "");
+        stmt.setString(10, user.getUsername() != null ? user.getUsername().trim() : "");
+        stmt.setString(11, user.getPassword() != null ? user.getPassword().trim() : "");
+        stmt.setObject(12, createdBy, java.sql.Types.INTEGER);
+        int rowsAffected = stmt.executeUpdate();
+        return rowsAffected > 0;
+    }
+}
 }

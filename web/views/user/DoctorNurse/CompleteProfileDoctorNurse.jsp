@@ -75,12 +75,6 @@
                     <option value="Tiến Sỹ" ${specialization == 'Tiến Sỹ' ? 'selected' : ''}>Tiến Sỹ</option>
                 </select>
             </div>
-
-            <div class="mb-3">
-                <label for="address" class="form-label">Địa chỉ</label>
-                <input type="text" class="form-control" id="address" name="address" value="${address}" placeholder="Nhập địa chỉ" required>
-            </div>
-
             <c:if test="${not empty error}">
                 <div class="alert alert-danger" role="alert">${error}</div>
             </c:if>

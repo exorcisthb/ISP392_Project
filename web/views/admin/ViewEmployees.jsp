@@ -8,6 +8,18 @@
 </head>
 <body class="bg-light">
 <div class="container mt-5">
+    <% 
+        String successMessage = (String) session.getAttribute("successMessage");
+        String errorMessage = (String) request.getAttribute("error");
+        if (successMessage != null) {
+            out.println("<div class='alert alert-success' role='alert'>" + successMessage + "</div>");
+            session.removeAttribute("successMessage");
+        }
+        if (errorMessage != null) {
+            out.println("<div class='alert alert-danger' role='alert'>" + errorMessage + "</div>");
+            request.removeAttribute("error");
+        }
+    %>
     <h2 class="text-center mb-4">Danh sách Bác Sĩ / Y Tá </h2>
 
     <div class="d-flex justify-content-between mb-3">
