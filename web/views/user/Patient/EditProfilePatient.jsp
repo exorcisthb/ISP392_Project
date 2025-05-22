@@ -6,46 +6,67 @@
         <meta charset="UTF-8">
         <title>Chỉnh sửa hồ sơ bệnh nhân</title>
         <style>
-            body {
-                font-family: Arial, sans-serif;
-                max-width: 600px;
-                margin: 0 auto;
-                padding: 20px;
-            }
-            .form-group {
-                margin-bottom: 15px;
-            }
-            label {
-                display: block;
-                font-weight: bold;
-                margin-top: 12px
-            }
-            input, select, textarea {
-                width: 100%;
-                padding: 8px;
-                margin-top: 4px;
-                border: 1px solid #ccc;
-                border-radius: 6px;
-            }
-            .btn {
-                margin-top: 20px;
-                padding: 10px;
-                background-color: #10b981;
-                color: white;
-                border: none;
-                width: 100%;
-                border-radius: 6px;
-                cursor: pointer;
-            }
-            .btn:hover {
-                background-color: #059669;
-            }
-            .error {
-                color: red;
-            }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f3f4f6;
+            padding: 20px;
+        }
+        .form-container {
+            background-color: white;
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 24px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 16px;
+        }
+        label {
+            display: block;
+            margin-top: 12px;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-top: 4px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+        .btn {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #10b981;
+            color: white;
+            border: none;
+            width: 100%;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background-color: #059669;
+        }
+        .message {
+            text-align: center;
+            margin-top: 12px;
+        }
+        .message.success {
+            color: green;
+        }
+        .message.error {
+            color: red;
+        }
         </style>
     </head>
     <body>
+        
+        <c:if test="${not empty success}">
+            <div class="message success">${success}</div>
+        </c:if>
+        <c:if test="${not empty error}">
+            <div class="message error">${error}</div>
+        </c:if>
         <h2>Chỉnh sửa hồ sơ bệnh nhân</h2>
         <form action="${pageContext.request.contextPath}/EditProfileUserController" method="post">
             <input type="hidden" name="userID" value="${sessionScope.user.userID}">
@@ -70,13 +91,7 @@
             <input type="tel" id="phone" name="phone" value="${sessionScope.user.phone}" required>
             <label for="address">Địa chỉ:</label>
             <input type="text" id="address" name="address" value="${sessionScope.user.address}" required>
-            <button type="submit" class="btn">Cập nhật</button>
-            <c:if test="${not empty error}">
-                <p class="error">${error}</p>
-            </c:if>
-            <c:if test="${not empty success}">
-                <p style="color: green" class="success">${success}</p>
-            </c:if>  
+            <button type="submit" class="btn">Cập nhật</button> 
             <a href="${pageContext.request.contextPath}/views/user/Patient/PatientDashBoard.jsp">
                 <button type="button" class="btn">Quay lại trang chủ</button>
             </a>
