@@ -61,13 +61,6 @@ public class AddEmployeeServlet extends HttpServlet {
             return;
         }
 
-        // Validate gender
-        if (!gender.equals("Nam") && !gender.equals("Nữ") && !gender.equals("Khác")) {
-            request.setAttribute("error", "Giới tính không hợp lệ. Vui lòng chọn Nam, Nữ hoặc Khác.");
-            request.getRequestDispatcher("views/admin/AddDoctorNurse.jsp").forward(request, response);
-            return;
-        }
-
         // Convert dob to java.sql.Date
         Date dob;
         try {
@@ -93,15 +86,15 @@ public class AddEmployeeServlet extends HttpServlet {
                 createdBy = 35; // Gán admin ID khớp với database
             }
 
-            // Set default status as "Hoạt động"
-            String status = "Hoạt động";
+            // Set default status as "Active" (khớp với database)
+            String status = "Active";
 
-            // Call UserService to add the employee
+            // Call UserService to add the user
             boolean success = userService.addUser(fullName, gender, dob, specialization, role, status, email, phone, address, username, password, createdBy);
             if (success) {
                 // Set success message in session and redirect to the view employees page
                 session.setAttribute("successMessage", "Thêm nhân viên thành công!");
-                response.sendRedirect(request.getContextPath() + "/admin/viewEmployees");
+                response.sendRedirect(request.getContextPath() + "/views/admin/ViewEmployees.jsp");
             } else {
                 request.setAttribute("error", "Không thể thêm nhân viên. Email, username hoặc số điện thoại có thể đã tồn tại.");
                 request.getRequestDispatcher("views/admin/AddDoctorNurse.jsp").forward(request, response); // Quay lại form để sửa

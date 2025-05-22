@@ -3,6 +3,8 @@ package model.service;
 import java.sql.SQLException;
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import model.dao.UserDAO;
 import model.entity.Users;
 import org.mindrot.jbcrypt.BCrypt;
@@ -90,7 +92,7 @@ public class UserService {
 
     // Validate DOB: must not exceed current date
     private void validateDob(Date dob) throws IllegalArgumentException {
-        LocalDate currentDate = LocalDate.now(); // Current date: 09:30 PM +07 on Wednesday, May 21, 2025
+        LocalDate currentDate = LocalDate.now(); // Current date: 12:37 PM +07 on Thursday, May 22, 2025
         LocalDate dobDate = dob.toLocalDate();
         if (dobDate.isAfter(currentDate)) {
             throw new IllegalArgumentException("Năm sinh không được vượt quá thời gian thực.");
@@ -117,38 +119,66 @@ public class UserService {
         return userDAO.getUserByID(userID);
     }
 
-    // New method to add employee
-  // New method to add employee
-public boolean addUser(String fullName, String gender, Date dob, String specialization, String role, String status, String email, String phone, String address, String username, String password, int createdBy) throws SQLException {
-    // Validate inputs
-    validateEmail(email);
-    validatePhoneNumber(phone);
-    validateDob(dob);
+    // New method to add user
+    public boolean addUser(String fullName, String gender, Date dob, String specialization, String role, String status, String email, String phone, String address, String username, String password, int createdBy) throws SQLException {
+        // Validate inputs
+        validateEmail(email);
+        validatePhoneNumber(phone);
+        validateDob(dob);
+        validatePassword(password);
 
-    // Check for existing email, username, or phone
-    if (userDAO.isEmailOrUsernameExists(email, username)) {
-        return false;
+        // Check for existing email, username, or phone
+        if (userDAO.isEmailOrUsernameExists(email, username)) {
+            return false;
+        }
+        if (phone != null && !phone.trim().isEmpty() && userDAO.isPhoneExists(phone)) {
+            return false;
+        }
+
+        // Map gender to match database values
+        String mappedGender = gender;
+        if (mappedGender != null && !mappedGender.trim().isEmpty()) {
+            mappedGender = mappedGender.trim();
+            if (mappedGender.equals("Nam")) mappedGender = "Male";
+            else if (mappedGender.equals("Nữ")) mappedGender = "Female";
+            else if (mappedGender.equals("Khác")) mappedGender = "Other";
+        } else {
+            mappedGender = null; // Allow NULL as per database schema
+        }
+
+        // Create Users object
+        Users user = new Users();
+        user.setFullName(fullName);
+        user.setGender(mappedGender);
+        user.setDob(dob);
+        user.setSpecialization(specialization);
+        user.setRole(role);
+        user.setStatus(status);
+        user.setEmail(email);
+        user.setPhone(phone);
+        user.setAddress(address);
+        user.setUsername(username);
+        user.setPassword(password); // Consider encrypting password here if needed
+        user.setCreatedBy(createdBy);
+
+        // Call DAO to add user
+        return userDAO.addUser(user, createdBy);
     }
-    if (phone != null && !phone.trim().isEmpty() && userDAO.isPhoneExists(phone)) {
-        return false;
+ public List<Users> getAllUsers() {
+    List<Users> users = new ArrayList<>();
+    try {
+        users = userDAO.getAllUsers();
+        if (users == null) {
+            users = new ArrayList<>();
+        }
+        System.out.println("UserService: Số lượng người dùng lấy được tại 09:20 PM +07, 22/05/2025: " + users.size());
+    } catch (Exception e) { // Bắt tất cả ngoại lệ, không chỉ SQLException
+        System.out.println("Lỗi trong UserService tại 09:20 PM +07, 22/05/2025: " + e.getMessage());
+        e.printStackTrace();
     }
-
-    // Create Users object
-    Users user = new Users();
-    user.setFullName(fullName);
-    user.setGender(gender);
-    user.setDob(dob);
-    user.setSpecialization(specialization);
-    user.setRole(role);
-    user.setStatus(status);
-    user.setEmail(email);
-    user.setPhone(phone);
-    user.setAddress(address);
-    user.setUsername(username);
-    user.setPassword(password); // Consider encrypting password here if needed
-    user.setCreatedBy(createdBy);
-
-    // Call DAO to add employee
-    return userDAO.addUser(user, createdBy);
+    return users;
 }
+ public List<Users> getAllEmployees() throws SQLException {
+        return userDAO.getAllEmployee();
+    }
 }
