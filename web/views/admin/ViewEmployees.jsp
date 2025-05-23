@@ -7,12 +7,15 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>Danh sách bác sĩ</title>
+        <title>Danh sách Bác Sĩ / Y Tá</title>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     </head>
     <body class="bg-light">
         <div class="container mt-5">
-
+            <!-- Home button in top-left corner -->
+            <div class="d-flex justify-content-start mb-3">
+                <a href="${pageContext.request.contextPath}/views/admin/dashboard.jsp" class="btn btn-primary">Home</a>
+            </div>
 
             <h2 class="text-center mb-4">Danh sách Bác Sĩ / Y Tá</h2>
 
@@ -20,7 +23,6 @@
                 <a href="${pageContext.request.contextPath}/views/admin/AddDoctorNurse.jsp" class="btn btn-success">Thêm bác sĩ / Y Tá</a>
             </div>
             <form action="ViewEmployeeServlet" method="get">
-
                 <table class="table table-bordered table-hover">
                     <thead class="table-light text-center">
                         <tr>
