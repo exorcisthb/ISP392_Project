@@ -188,7 +188,7 @@ public class UserService {
     return users != null ? users : new ArrayList<>();
 }
 
-public Users getEmpolyeeByID(int userID) throws SQLException {
+public Users getEmployeeByID(int userID) throws SQLException {
     return userDAO.getEmployeeByID(userID);
 }
  public List<Users> getAllPatient() throws SQLException {
@@ -199,5 +199,48 @@ public Users getEmpolyeeByID(int userID) throws SQLException {
 
 public Users getPatientByID(int userID) throws SQLException {
     return userDAO.getPatientByID(userID);
+}
+
+ public boolean UpdateEmployee(Users user) throws SQLException {
+    try {
+        // Validate required fields (skip status validation)
+        if (user.getFullName() == null || user.getFullName().trim().isEmpty()) {
+            throw new SQLException("Họ và tên không được để trống.");
+        }
+        if (user.getDob() == null) {
+            throw new SQLException("Ngày sinh không được để trống.");
+        }
+        if (user.getGender() == null || user.getGender().trim().isEmpty()) {
+            throw new SQLException("Giới tính không được để trống.");
+        }
+        if (user.getSpecialization() == null || user.getSpecialization().trim().isEmpty()) {
+            throw new SQLException("Chuyên khoa không được để trống.");
+        }
+
+        // Map gender to match database values
+        String mappedGender = user.getGender().trim();
+        System.out.println("Original gender: " + mappedGender);
+        if (mappedGender.equals("Nam")) {
+            mappedGender = "Male";
+        } else if (mappedGender.equals("Nữ")) {
+            mappedGender = "Female";
+        } else if (mappedGender.equals("Khác")) {
+            mappedGender = "Other";
+        } else {
+            throw new SQLException("Giới tính không hợp lệ: " + user.getGender());
+        }
+        user.setGender(mappedGender);
+        System.out.println("Mapped gender: " + mappedGender);
+
+        // Ensure status is "Active" (override if provided)
+        user.setStatus("Active");
+
+        boolean result = userDAO.UpdateEmployee(user);
+        System.out.println("DAO updateEmployee result: " + result);
+        return result;
+    } catch (SQLException e) {
+        System.out.println("SQLException in UserService.updateEmployee: " + e.getMessage());
+        throw new SQLException("Lỗi khi cập nhật nhân viên: " + e.getMessage(), e);
+    }
 }
 }

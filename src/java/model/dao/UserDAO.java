@@ -400,6 +400,33 @@ public Users getPatientByID(int userID) throws SQLException {
     return null;
 }
 
+
+public boolean UpdateEmployee(Users user) throws SQLException {
+    String sql = "UPDATE Users SET FullName = ?, Gender = ?, Specialization = ?, Dob = ?, Status = ? WHERE UserID = ? AND Role IN ('doctor', 'nurse', 'receptionist')";
+    try (Connection conn = dbContext.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(sql)) {
+        conn.setAutoCommit(false);
+        stmt.setString(1, user.getFullName());
+        stmt.setString(2, user.getGender());
+        stmt.setString(3, user.getSpecialization());
+        stmt.setDate(4, user.getDob());
+        stmt.setString(5, user.getStatus()); // This will be "Active"
+        stmt.setInt(6, user.getUserID());
+        System.out.println("Executing update for UserID: " + user.getUserID() + ", FullName: " + user.getFullName());
+        int rowsAffected = stmt.executeUpdate();
+        System.out.println("Rows affected: " + rowsAffected);
+        if (rowsAffected > 0) {
+            conn.commit();
+            return true;
+        } else {
+            conn.rollback();
+            return false;
+        }
+    } catch (SQLException e) {
+        System.out.println("SQLException in UserDAO.updateEmployee: " + e.getMessage());
+        throw e;
+    }
+}
 }
 
 

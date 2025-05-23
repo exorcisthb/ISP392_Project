@@ -28,7 +28,7 @@ public class ViewDetailDoctorNurseServlet extends HttpServlet {
         try {
             int id = Integer.parseInt(idStr);
             System.out.println("Lấy thông tin chi tiết cho UserID=" + id + " tại 08:58 AM +07, 23/05/2025");
-            Users user = userService.getEmpolyeeByID(id); // Sử dụng phương thức mới từ UserService
+            Users user = userService.getEmployeeByID(id); // Sử dụng phương thức mới từ UserService
             if (user != null) {
                 System.out.println("Tìm thấy employee: UserID=" + user.getUserID() + ", FullName=" + user.getFullName() + ", Role=" + user.getRole() + " tại 08:58 AM +07, 23/05/2025");
                 request.setAttribute("user", user);
