@@ -191,5 +191,13 @@ public class UserService {
 public Users getEmpolyeeByID(int userID) throws SQLException {
     return userDAO.getEmployeeByID(userID);
 }
+ public List<Users> getAllPatient() throws SQLException {
+    List<Users> users = userDAO.getAllPatient();
+    return users != null ? users : new ArrayList<>();
+}
 
+
+public Users getPatientByID(int userID) throws SQLException {
+    return userDAO.getPatientByID(userID);
+}
 }

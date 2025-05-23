@@ -5,13 +5,16 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
 import model.entity.Users;
 import model.service.UserService;
+
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
-public class ViewEmployeeServlet extends HttpServlet {
+@WebServlet(name = "ViewPatientServlet", urlPatterns = {"/ViewPatientServlet"})
+public class ViewPatientServlet extends HttpServlet {
 
     private UserService userService;
 
@@ -24,13 +27,13 @@ public class ViewEmployeeServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
-            List<Users> employees = userService.getAllEmployee(); // sửa tên cho đúng chuẩn service
-            request.setAttribute("employees", employees);
+            List<Users> patients = userService.getAllPatient();
+            request.setAttribute("patients", patients); // Fixed attribute name
         } catch (SQLException e) {
             e.printStackTrace();
-            request.setAttribute("error", "Lỗi khi tải danh sách bác sĩ/y tá: " + e.getMessage());
+            request.setAttribute("error", "Lỗi khi tải danh sách bệnh nhân: " + e.getMessage());
         }
 
-        request.getRequestDispatcher("/views/admin/ViewEmployees.jsp").forward(request, response);
+        request.getRequestDispatcher("views/admin/ViewPatients.jsp").forward(request, response);
     }
 }

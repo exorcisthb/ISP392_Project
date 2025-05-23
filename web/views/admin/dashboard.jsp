@@ -110,7 +110,7 @@
         <!-- Action Buttons -->
         <div class="action-card">
             <h3>Dental Clinic Management</h3>
-            <a href="ViewPatients.jsp" class="btn-green">View Patients</a>
+            <a href="${pageContext.request.contextPath}/ViewPatientServlet" class="btn-green">View Patients</a>
             <a href="${pageContext.request.contextPath}/ViewEmployeeServlet" class="btn-green">View Employees</a>
             <a href="ViewServices.jsp" class="btn-green">View Services</a>
             <a href="ViewAppointments.jsp" class="btn-green">View Appointment List</a>
