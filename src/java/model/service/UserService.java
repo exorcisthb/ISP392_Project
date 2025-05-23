@@ -165,26 +165,13 @@ public class UserService {
         return userDAO.addUser(user, createdBy);
     }
 
-    public List<Users> getAllEmployee() throws SQLException {
-        List<Users> users = new ArrayList<>();
-        try {
-            users = userDAO.getAllEmployee();
-            if (users == null) {
-                users = new ArrayList<>();
-            }
-            System.out.println("UserService: Số lượng người dùng lấy được tại 08:56 AM +07, 23/05/2025: " + users.size());
-        } catch (Exception e) { // Bắt tất cả ngoại lệ, không chỉ SQLException
-            System.out.println("Lỗi trong UserService tại 08:56 AM +07, 23/05/2025: " + e.getMessage());
-            e.printStackTrace();
-        }
-        return users;
-    }
+  public List<Users> getAllEmployee() throws SQLException {
+    List<Users> users = userDAO.getAllEmployee();
+    return users != null ? users : new ArrayList<>();
+}
 
-    // Phương thức mới: getEmpolyeeByID
-    public Users getEmpolyeeByID(int userID) throws SQLException {
-        System.out.println("Gọi UserDAO.getEmployeeByID() với UserID=" + userID + " tại 08:56 AM +07, 23/05/2025");
-        Users user = userDAO.getEmployeeByID(userID);
-        System.out.println("Kết quả từ UserDAO.getEmployeeByID: " + (user != null ? "Tìm thấy UserID=" + user.getUserID() : "Không tìm thấy") + " tại 08:56 AM +07, 23/05/2025");
-        return user;
-    }
+public Users getEmpolyeeByID(int userID) throws SQLException {
+    return userDAO.getEmployeeByID(userID);
+}
+
 }
