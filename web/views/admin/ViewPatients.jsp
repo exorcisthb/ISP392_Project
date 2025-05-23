@@ -25,6 +25,7 @@
             <th>SĐT</th>
             <th>Địa chỉ</th>
             <th>Trạng Thái</th>
+            <th>Hành Động</th>
         </tr>
         </thead>
         <tbody id="patientTable">

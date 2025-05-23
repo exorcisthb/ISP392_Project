@@ -220,7 +220,7 @@ public class UserDAO {
 
     public List<Users> getAllEmployee() throws SQLException{
         List<Users> users = new ArrayList<>();
-        String sql = "SELECT UserID, Username, [Password], Email, FullName, Dob, Gender, Phone, [Address], MedicalHistory, Specialization, [Role], [Status], CreatedBy, CreatedAt, UpdatedAt FROM Users WHERE Role IN ('doctor', 'nurse')";
+        String sql = "SELECT UserID, Username, [Password], Email, FullName, Dob, Gender, Phone, [Address], MedicalHistory, Specialization, [Role], [Status], CreatedBy, CreatedAt, UpdatedAt FROM Users WHERE Role IN ('doctor', 'nurse','receptionist')";
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -286,6 +286,44 @@ public class UserDAO {
             }
         }
         return users;
+    }
+    // Phương thức mới: getEmployeeByID
+    public Users getEmployeeByID(int userID) throws SQLException {
+        String sql = "SELECT * FROM Users WHERE userID = ? AND Role IN ('doctor', 'nurse', 'receptionist')";
+        try (Connection conn = dbContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, userID);
+            System.out.println("Thực thi truy vấn: " + sql + " với UserID=" + userID + " tại 08:46 AM +07, 23/05/2025");
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    Users user = new Users();
+                    user.setUserID(rs.getInt("userID"));
+                    user.setUsername(rs.getString("username"));
+                    user.setPassword(rs.getString("password"));
+                    user.setEmail(rs.getString("email"));
+                    user.setFullName(rs.getString("fullName"));
+                    user.setDob(rs.getDate("dob"));
+                    user.setGender(rs.getString("gender"));
+                    user.setPhone(rs.getString("phone"));
+                    user.setAddress(rs.getString("address"));
+                    user.setMedicalHistory(rs.getString("medicalHistory"));
+                    user.setSpecialization(rs.getString("specialization"));
+                    user.setRole(rs.getString("role"));
+                    user.setStatus(rs.getString("status"));
+                    user.setCreatedBy(rs.getObject("createdBy") != null ? rs.getInt("createdBy") : null);
+                    user.setCreatedAt(rs.getDate("createdAt"));
+                    user.setUpdatedAt(rs.getDate("updatedAt"));
+                    System.out.println("Đã ánh xạ: UserID=" + user.getUserID() + ", FullName=" + user.getFullName() + ", Role=" + user.getRole() + " tại 08:46 AM +07, 23/05/2025");
+                    return user;
+                } else {
+                    System.out.println("Không tìm thấy employee với UserID=" + userID + " hoặc Role không phải doctor/nurse/receptionist tại 08:46 AM +07, 23/05/2025");
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Lỗi SQL trong getEmployeeByID tại 08:46 AM +07, 23/05/2025: " + e.getMessage() + ", SQLState: " + e.getSQLState() + ", Error Code: " + e.getErrorCode());
+            e.printStackTrace();
+            throw e;
+        }
+        return null;
     }
 
 }

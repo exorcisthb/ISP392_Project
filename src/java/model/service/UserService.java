@@ -92,7 +92,7 @@ public class UserService {
 
     // Validate DOB: must not exceed current date
     private void validateDob(Date dob) throws IllegalArgumentException {
-        LocalDate currentDate = LocalDate.now(); // Current date: 12:37 PM +07 on Thursday, May 22, 2025
+        LocalDate currentDate = LocalDate.now(); // Current date: 08:56 AM +07 on Friday, May 23, 2025
         LocalDate dobDate = dob.toLocalDate();
         if (dobDate.isAfter(currentDate)) {
             throw new IllegalArgumentException("Năm sinh không được vượt quá thời gian thực.");
@@ -164,18 +164,27 @@ public class UserService {
         // Call DAO to add user
         return userDAO.addUser(user, createdBy);
     }
- public List<Users> getAllEmployee()  throws SQLException{
-    List<Users> users = new ArrayList<>();
-    try {
-        users = userDAO.getAllEmployee();
-        if (users == null) {
-            users = new ArrayList<>();
+
+    public List<Users> getAllEmployee() throws SQLException {
+        List<Users> users = new ArrayList<>();
+        try {
+            users = userDAO.getAllEmployee();
+            if (users == null) {
+                users = new ArrayList<>();
+            }
+            System.out.println("UserService: Số lượng người dùng lấy được tại 08:56 AM +07, 23/05/2025: " + users.size());
+        } catch (Exception e) { // Bắt tất cả ngoại lệ, không chỉ SQLException
+            System.out.println("Lỗi trong UserService tại 08:56 AM +07, 23/05/2025: " + e.getMessage());
+            e.printStackTrace();
         }
-        System.out.println("UserService: Số lượng người dùng lấy được tại 09:20 PM +07, 22/05/2025: " + users.size());
-    } catch (Exception e) { // Bắt tất cả ngoại lệ, không chỉ SQLException
-        System.out.println("Lỗi trong UserService tại 09:20 PM +07, 22/05/2025: " + e.getMessage());
-        e.printStackTrace();
+        return users;
     }
-    return users;
-}
+
+    // Phương thức mới: getEmpolyeeByID
+    public Users getEmpolyeeByID(int userID) throws SQLException {
+        System.out.println("Gọi UserDAO.getEmployeeByID() với UserID=" + userID + " tại 08:56 AM +07, 23/05/2025");
+        Users user = userDAO.getEmployeeByID(userID);
+        System.out.println("Kết quả từ UserDAO.getEmployeeByID: " + (user != null ? "Tìm thấy UserID=" + user.getUserID() : "Không tìm thấy") + " tại 08:56 AM +07, 23/05/2025");
+        return user;
+    }
 }

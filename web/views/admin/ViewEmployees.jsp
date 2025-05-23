@@ -47,7 +47,7 @@
                                         </td>
                                         <td>${user.status}</td>
                                         <td>
-                                            <a href="ViewEmployeeServlet?id=${user.userID}" class="btn btn-sm btn-info text-white">Xem chi tiết</a>
+                                            <a href="${pageContext.request.contextPath}/ViewDoctorNurseDetailServlet?id=${user.userID}" class="btn btn-sm btn-info text-white">Xem chi tiết</a>
                                             <a href="editDoctor.jsp?id=${user.userID}" class="btn btn-sm btn-primary">Sửa</a>
                                             <a href="${pageContext.request.contextPath}/deleteDoctor?id=${user.userID}" class="btn btn-sm btn-danger" onclick="return confirm('Bạn có chắc muốn xóa bác sĩ này?');">Xóa</a>
                                         </td>
