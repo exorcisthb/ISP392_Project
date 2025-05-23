@@ -56,15 +56,15 @@ public class UserDAO {
             }
         }
     }
-// Validate fullName: chỉ chứa chữ cái và dấu cách
-private void validateFullName(String fullName) throws SQLException {
-    if (fullName == null || fullName.trim().isEmpty()) {
-        throw new SQLException("Tên không được để trống.");
+// Validate fullName: chỉ chứa chữ cái (Unicode) và dấu cách
+    public void validateFullName(String fullName) throws SQLException {
+        if (fullName == null || fullName.trim().isEmpty()) {
+            throw new SQLException("Tên không được để trống.");
+        }
+        if (!fullName.matches("^[\\p{L}\\s]+$")) {
+            throw new SQLException("Tên chỉ được chứa chữ cái và dấu cách.");
+        }
     }
-    if (!fullName.matches("^[a-zA-Z\\s]+$")) {
-        throw new SQLException("Tên chỉ được chứa chữ cái và dấu cách.");
-    }
-}
 
 // Validate username: chỉ chứa chữ cái và số
 private void validateUsername(String username) throws SQLException {
@@ -427,6 +427,17 @@ public boolean UpdateEmployee(Users user) throws SQLException {
         throw e;
     }
 }
+public boolean deleteEmployee(int userID) throws SQLException {
+        String sql = "DELETE FROM Users WHERE userID = ? AND Role IN ('Doctor', 'Nurse', 'Receptionist')";
+        try (Connection conn = dbContext.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, userID);
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            throw new SQLException("Lỗi khi xóa nhân viên khỏi cơ sở dữ liệu: " + e.getMessage(), e);
+        }
+    }
 }
 
 

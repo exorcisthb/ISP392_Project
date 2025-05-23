@@ -82,12 +82,13 @@ public class UserService {
     public void updateUserProfile(Users user) throws SQLException {
         userDAO.updateUserProfile(user);
     }
-// Validate fullName: chỉ chứa chữ cái và dấu cách
-    private void validateFullName(String fullName) throws SQLException {
+
+  // Validate fullName: chỉ chứa chữ cái (Unicode) và dấu cách
+    public void validateFullName(String fullName) throws SQLException {
         if (fullName == null || fullName.trim().isEmpty()) {
             throw new SQLException("Tên không được để trống.");
         }
-        if (!fullName.matches("^[a-zA-Z\\s]+$")) {
+        if (!fullName.matches("^[\\p{L}\\s]+$")) {
             throw new SQLException("Tên chỉ được chứa chữ cái và dấu cách.");
         }
     }
@@ -243,4 +244,10 @@ public Users getPatientByID(int userID) throws SQLException {
         throw new SQLException("Lỗi khi cập nhật nhân viên: " + e.getMessage(), e);
     }
 }
+ public boolean deleteEmployee(int userID) throws SQLException {
+        if (userID <= 0) {
+            throw new SQLException("ID nhân viên không hợp lệ.");
+        }
+        return userDAO.deleteEmployee(userID);
+    }
 }
