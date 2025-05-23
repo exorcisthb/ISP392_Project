@@ -55,11 +55,33 @@ public class CompleteProfileController extends HttpServlet {
             request.setAttribute("specialization", specialization);
 
             // Validate dữ liệu (address is optional, so not checked here)
-            if (fullName == null || fullName.trim().isEmpty() ||
-                dobStr == null || dobStr.trim().isEmpty() ||
-                gender == null || gender.trim().isEmpty() ||
-                phone == null || phone.trim().isEmpty()) {
-                request.setAttribute("error", "Vui lòng điền đầy đủ các trường bắt buộc.");
+            if (fullName == null || fullName.trim().isEmpty()) {
+                request.setAttribute("error", "Tên không được để trống.");
+                redirectToCompleteProfile(user.getRole(), request, response);
+                return;
+            }
+
+            // Validate fullName: chỉ chứa chữ cái và dấu cách (hỗ trợ tiếng Việt)
+            if (!fullName.matches("^[\\p{L}\\s]+$")) {
+                request.setAttribute("error", "Tên chỉ được chứa chữ cái và dấu cách.");
+                redirectToCompleteProfile(user.getRole(), request, response);
+                return;
+            }
+
+            if (dobStr == null || dobStr.trim().isEmpty()) {
+                request.setAttribute("error", "Ngày sinh không được để trống.");
+                redirectToCompleteProfile(user.getRole(), request, response);
+                return;
+            }
+
+            if (gender == null || gender.trim().isEmpty()) {
+                request.setAttribute("error", "Giới tính không được để trống.");
+                redirectToCompleteProfile(user.getRole(), request, response);
+                return;
+            }
+
+            if (phone == null || phone.trim().isEmpty()) {
+                request.setAttribute("error", "Số điện thoại không được để trống.");
                 redirectToCompleteProfile(user.getRole(), request, response);
                 return;
             }
@@ -75,10 +97,10 @@ public class CompleteProfileController extends HttpServlet {
             Date dob;
             try {
                 dob = Date.valueOf(dobStr);
-                LocalDate currentDate = LocalDate.now(); // Current date: 09:07 PM +07 on Wednesday, May 21, 2025
+                LocalDate currentDate = LocalDate.now(); // Current date: 09:38 AM +07 on Friday, May 23, 2025
                 LocalDate dobDate = dob.toLocalDate();
                 if (dobDate.isAfter(currentDate)) {
-                    request.setAttribute("error", "Năm sinh không được vượt quá thời gian thực.");
+                    request.setAttribute("error", "Ngày sinh không được vượt quá thời gian thực.");
                     redirectToCompleteProfile(user.getRole(), request, response);
                     return;
                 }

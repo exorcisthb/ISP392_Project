@@ -30,15 +30,49 @@ public class RegistrationServlet extends HttpServlet {
 
         // Retain form values in case of error
         request.setAttribute("username", username);
-        request.setAttribute("email", email); // Retain email separately
+        request.setAttribute("email", email);
         request.setAttribute("role", role);
 
         // Basic validation
-        if (username == null || username.trim().isEmpty() ||
-            email == null || email.trim().isEmpty() ||
-            password == null || password.trim().isEmpty() ||
-            role == null || role.trim().isEmpty()) {
-            request.setAttribute("error", "Vui lòng điền đầy đủ Username, Email, Password và Role.");
+        if (username == null || username.trim().isEmpty()) {
+            request.setAttribute("error", "Username không được để trống.");
+            request.setAttribute("form", "register"); // Stay on registration form
+            request.getRequestDispatcher("/views/common/login.jsp").forward(request, response);
+            return;
+        }
+
+        // Validate username: chỉ chứa chữ cái và số
+        if (!username.matches("^[a-zA-Z0-9]+$")) {
+            request.setAttribute("error", "Username chỉ được chứa chữ cái và số.");
+            request.setAttribute("form", "register"); // Stay on registration form
+            request.getRequestDispatcher("/views/common/login.jsp").forward(request, response);
+            return;
+        }
+
+        if (email == null || email.trim().isEmpty()) {
+            request.setAttribute("error", "Email không được để trống.");
+            request.setAttribute("form", "register"); // Stay on registration form
+            request.getRequestDispatcher("/views/common/login.jsp").forward(request, response);
+            return;
+        }
+
+        if (password == null || password.trim().isEmpty()) {
+            request.setAttribute("error", "Password không được để trống.");
+            request.setAttribute("form", "register"); // Stay on registration form
+            request.getRequestDispatcher("/views/common/login.jsp").forward(request, response);
+            return;
+        }
+
+        // Validate password: ít nhất 8 ký tự, 1 chữ hoa, 1 ký tự đặc biệt, 1 số
+        if (password.length() < 8 || !password.matches("^(?=.*[A-Z])(?=.*[!@#$%^&*])(?=.*\\d).+$")) {
+            request.setAttribute("error", "Mật khẩu phải có ít nhất 8 ký tự, 1 chữ cái in hoa, 1 ký tự đặc biệt và 1 số.");
+            request.setAttribute("form", "register"); // Stay on registration form
+            request.getRequestDispatcher("/views/common/login.jsp").forward(request, response);
+            return;
+        }
+
+        if (role == null || role.trim().isEmpty()) {
+            request.setAttribute("error", "Role không được để trống.");
             request.setAttribute("form", "register"); // Stay on registration form
             request.getRequestDispatcher("/views/common/login.jsp").forward(request, response);
             return;

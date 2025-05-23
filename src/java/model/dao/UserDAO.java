@@ -56,26 +56,46 @@ public class UserDAO {
             }
         }
     }
-
-    // Đăng ký tài khoản cơ bản vào bảng Users
-    public boolean registerUserBasic(Users user) throws SQLException {
-        validateEmail(user.getEmail());
-        validatePassword(user.getPassword());
-        String sql = "INSERT INTO Users (username, email, password, role, phone, createdBy, createdAt) VALUES (?, ?, ?, ?, ?, ?, ?)";
-        try (Connection conn = dbContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, user.getUsername());
-            stmt.setString(2, user.getEmail());
-            stmt.setString(3, user.getPassword()); // Already hashed in Service
-            stmt.setString(4, user.getRole());
-            stmt.setString(5, user.getPhone());
-            stmt.setObject(6, user.getCreatedBy(), java.sql.Types.INTEGER);
-            stmt.setDate(7, user.getCreatedAt());
-            return stmt.executeUpdate() > 0;
-        } catch (SQLException e) {
-            System.err.println("SQL Error in registerUserBasic: " + e.getMessage());
-            throw e;
-        }
+// Validate fullName: chỉ chứa chữ cái và dấu cách
+private void validateFullName(String fullName) throws SQLException {
+    if (fullName == null || fullName.trim().isEmpty()) {
+        throw new SQLException("Tên không được để trống.");
     }
+    if (!fullName.matches("^[a-zA-Z\\s]+$")) {
+        throw new SQLException("Tên chỉ được chứa chữ cái và dấu cách.");
+    }
+}
+
+// Validate username: chỉ chứa chữ cái và số
+private void validateUsername(String username) throws SQLException {
+    if (username == null || username.trim().isEmpty()) {
+        throw new SQLException("Tên đăng nhập không được để trống.");
+    }
+    if (!username.matches("^[a-zA-Z0-9]+$")) {
+        throw new SQLException("Tên đăng nhập chỉ được chứa chữ cái và số.");
+    }
+}
+   public boolean registerUserBasic(Users user) throws SQLException {
+    validateEmail(user.getEmail());
+    validatePassword(user.getPassword());
+    validateFullName(user.getFullName());
+    validateUsername(user.getUsername());
+    String sql = "INSERT INTO Users (username, email, password, role, phone, createdBy, createdAt) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    try (Connection conn = dbContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+        stmt.setString(1, user.getUsername());
+        stmt.setString(2, user.getEmail());
+        stmt.setString(3, user.getPassword()); // Already hashed in Service
+        stmt.setString(4, user.getRole());
+        stmt.setString(5, user.getPhone());
+        stmt.setObject(6, user.getCreatedBy(), java.sql.Types.INTEGER);
+        stmt.setDate(7, user.getCreatedAt());
+        return stmt.executeUpdate() > 0;
+    } catch (SQLException e) {
+        System.err.println("SQL Error in registerUserBasic: " + e.getMessage());
+        throw e;
+    }
+}
+   
 
     // Tìm người dùng trong Users dựa trên email hoặc username
     public Users findUserByEmailOrUsername(String emailOrUsername) throws SQLException {

@@ -88,7 +88,7 @@
                 </div>
                 <form action="${pageContext.request.contextPath}/RegistrationServlet" method="post">
                     <div class="input-box">
-                        <input type="text" class="input-field" name="username" value="${requestScope.username}" placeholder="Ussername" required>
+                        <input type="text" class="input-field" name="username" value="${requestScope.username}" placeholder="Username" required>
                         <i class="bx bx-user"></i>
                     </div>
                     <div class="input-box">        

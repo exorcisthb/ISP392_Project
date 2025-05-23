@@ -82,7 +82,25 @@ public class UserService {
     public void updateUserProfile(Users user) throws SQLException {
         userDAO.updateUserProfile(user);
     }
+// Validate fullName: chỉ chứa chữ cái và dấu cách
+    private void validateFullName(String fullName) throws SQLException {
+        if (fullName == null || fullName.trim().isEmpty()) {
+            throw new SQLException("Tên không được để trống.");
+        }
+        if (!fullName.matches("^[a-zA-Z\\s]+$")) {
+            throw new SQLException("Tên chỉ được chứa chữ cái và dấu cách.");
+        }
+    }
 
+    // Validate username: chỉ chứa chữ cái và số
+    private void validateUsername(String username) throws SQLException {
+        if (username == null || username.trim().isEmpty()) {
+            throw new SQLException("Tên đăng nhập không được để trống.");
+        }
+        if (!username.matches("^[a-zA-Z0-9]+$")) {
+            throw new SQLException("Tên đăng nhập chỉ được chứa chữ cái và số.");
+        }
+    }
     // Validate email: must end with @gmail.com
     private void validateEmail(String email) throws IllegalArgumentException {
         if (email == null || email.trim().isEmpty() || !email.endsWith("@gmail.com") || email.equals("@gmail.com")) {
