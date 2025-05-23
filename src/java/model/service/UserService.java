@@ -164,10 +164,10 @@ public class UserService {
         // Call DAO to add user
         return userDAO.addUser(user, createdBy);
     }
- public List<Users> getAllUsers() {
+ public List<Users> getAllEmployee()  throws SQLException{
     List<Users> users = new ArrayList<>();
     try {
-        users = userDAO.getAllUsers();
+        users = userDAO.getAllEmployee();
         if (users == null) {
             users = new ArrayList<>();
         }
@@ -178,7 +178,4 @@ public class UserService {
     }
     return users;
 }
- public List<Users> getAllEmployees() throws SQLException {
-        return userDAO.getAllEmployee();
-    }
 }

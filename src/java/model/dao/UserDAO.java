@@ -218,7 +218,7 @@ public class UserDAO {
         }
     }
 
-    public List<Users> getAllUsers() {
+    public List<Users> getAllEmployee() throws SQLException{
         List<Users> users = new ArrayList<>();
         String sql = "SELECT UserID, Username, [Password], Email, FullName, Dob, Gender, Phone, [Address], MedicalHistory, Specialization, [Role], [Status], CreatedBy, CreatedAt, UpdatedAt FROM Users WHERE Role IN ('doctor', 'nurse')";
         Connection conn = null;
@@ -288,23 +288,4 @@ public class UserDAO {
         return users;
     }
 
-    public List<Users> getAllEmployee() throws SQLException {
-        List<Users> users = new ArrayList<>(); 
-        String sql = "SELECT UserID, FullName, Gender, Specialization, Dob, [Status] FROM Users WHERE Role IN ('doctor', 'nurse')";
-        try (Connection conn = dbContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    Users user = new Users();
-                    user.setUserID(rs.getInt("userID"));
-                    user.setFullName(rs.getString("fullName"));
-                    user.setGender(rs.getString("gender"));
-                    user.setSpecialization(rs.getString("specialization"));
-                    user.setDob(rs.getDate("dob"));
-                    user.setStatus(rs.getString("status"));
-                    users.add(user);
-                }
-            }
-            return users;
-        }
-    }
 }

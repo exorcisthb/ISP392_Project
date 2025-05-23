@@ -26,7 +26,7 @@ public class ViewEmployeeServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
-            List<Users> employees = userService.getAllEmployees(); // sửa tên cho đúng chuẩn service
+            List<Users> employees = userService.getAllEmployee(); // sửa tên cho đúng chuẩn service
             request.setAttribute("employees", employees);
         } catch (SQLException e) {
             e.printStackTrace();
@@ -34,5 +34,17 @@ public class ViewEmployeeServlet extends HttpServlet {
         }
 
         request.getRequestDispatcher("/views/admin/ViewEmployees.jsp").forward(request, response);
+    }
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+         try {
+            List<Users> employees = userService.getAllEmployee(); // sửa tên cho đúng chuẩn service
+            request.setAttribute("employees", employees);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            request.setAttribute("error", "Lỗi khi tải danh sách bác sĩ/y tá: " + e.getMessage());
+        }  
+          request.getRequestDispatcher("/views/admin/ViewDetailDoctorNurse.jsp").forward(request, response);
     }
 }

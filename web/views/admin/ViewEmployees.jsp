@@ -2,7 +2,7 @@
 <%@ page import="java.util.List" %>
 <%@ page import="model.entity.Users" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html>
     <head>
@@ -47,7 +47,7 @@
                                         </td>
                                         <td>${user.status}</td>
                                         <td>
-                                            <a href="viewDoctor.jsp?id=${user.userID}" class="btn btn-sm btn-info text-white">Xem chi tiết</a>
+                                            <a href="ViewEmployeeServlet?id=${user.userID}" class="btn btn-sm btn-info text-white">Xem chi tiết</a>
                                             <a href="editDoctor.jsp?id=${user.userID}" class="btn btn-sm btn-primary">Sửa</a>
                                             <a href="${pageContext.request.contextPath}/deleteDoctor?id=${user.userID}" class="btn btn-sm btn-danger" onclick="return confirm('Bạn có chắc muốn xóa bác sĩ này?');">Xóa</a>
                                         </td>
