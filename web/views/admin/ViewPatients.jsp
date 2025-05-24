@@ -139,7 +139,7 @@
                                         <td>${patient.status}</td>
                                         <td>
                                             <a href="${pageContext.request.contextPath}/ViewPatientDetailServlet?id=${patient.userID}" class="btn btn-sm btn-info text-white">Xem chi tiết</a>
-                                            <a href="editPatient.jsp?id=${patient.userID}" class="btn btn-sm btn-primary">Sửa</a>
+                                            <a href="${pageContext.request.contextPath}/UpdatePatientServlet?id=${patient.userID}" class="btn btn-sm btn-primary">Sửa</a>
                                             <a href="${pageContext.request.contextPath}/deletePatient?id=${patient.userID}" class="btn btn-sm btn-danger" onclick="return confirm('Bạn có chắc muốn xóa bệnh nhân này?');">Xóa</a>
                                         </td>
                                     </tr>

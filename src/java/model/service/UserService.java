@@ -260,4 +260,51 @@ public class UserService {
         }
         return userDAO.deleteEmployee(userID);
     }
+    public boolean UpdatePatient(Users user) throws SQLException {
+    try {
+        // Validate required fields
+        if (user.getFullName() == null || user.getFullName().trim().isEmpty()) {
+            throw new SQLException("Họ và tên không được để trống.");
+        }
+        if (user.getDob() == null) {
+            throw new SQLException("Ngày sinh không được để trống.");
+        }
+        if (user.getGender() == null || user.getGender().trim().isEmpty()) {
+            throw new SQLException("Giới tính không được để trống.");
+        }
+        if (user.getPhone() == null || user.getPhone().trim().isEmpty() || !user.getPhone().matches("\\d{10}")) {
+            throw new SQLException("Số điện thoại phải là 10 chữ số.");
+        }
+        if (user.getAddress() == null || user.getAddress().trim().isEmpty()) {
+            throw new SQLException("Địa chỉ không được để trống.");
+        }
+
+        // Map gender to match database values
+        String mappedGender = user.getGender().trim();
+        System.out.println("Original gender: " + mappedGender);
+        if (mappedGender.equals("Nam")) {
+            mappedGender = "Male";
+        } else if (mappedGender.equals("Nữ")) {
+            mappedGender = "Female";
+        } else {
+            throw new SQLException("Giới tính không hợp lệ: " + user.getGender());
+        }
+        user.setGender(mappedGender);
+        System.out.println("Mapped gender: " + mappedGender);
+
+        // Ensure status is valid (default to "Active" if not provided)
+        if (user.getStatus() == null || user.getStatus().trim().isEmpty()) {
+            user.setStatus("Active");
+        } else if (!user.getStatus().equals("Active") && !user.getStatus().equals("Inactive")) {
+            throw new SQLException("Trạng thái không hợp lệ.");
+        }
+
+        boolean result = userDAO.UpdatePatient(user); // Sử dụng UpdatePatient cho vai trò Patient
+        System.out.println("DAO updatePatient result: " + result);
+        return result;
+    } catch (SQLException e) {
+        System.out.println("SQLException in UserService.updatePatient: " + e.getMessage());
+        throw new SQLException("Lỗi khi cập nhật bệnh nhân: " + e.getMessage(), e);
+    }
+}
 }

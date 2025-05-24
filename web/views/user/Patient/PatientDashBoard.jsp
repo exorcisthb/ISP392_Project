@@ -19,7 +19,7 @@
                 <div id="userMenu" class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg hidden z-10">                 
                     <a href="${pageContext.request.contextPath}/UserProfileController" class="block px-4 py-2 text-gray-700 hover:bg-gray-100" onclick="viewProfile()">View Profile</a>
                     <a href="${pageContext.request.contextPath}/EditProfileUserController" class="block px-4 py-2 text-gray-700 hover:bg-gray-100" onclick="editProfile()">Edit Profile</a>
-                    <a href="${pageContext.request.contextPath}/LogoutServlet" class="block px-4 py-2 text-gray-700 hover:bg-gray-100" onclick="signOut()">Sign Out</a>
+                    <a href="${pageContext.request.contextPath}/LogoutServlet" class="block px-4 py-2 text-gray-700 hover:bg-gray-100" onclick="return confirm('Bạn có chắc muốn thoát?')">Sign Out</a>
                 </div>
             </div>
         </div>

@@ -438,6 +438,34 @@ public boolean deleteEmployee(int userID) throws SQLException {
             throw new SQLException("Lỗi khi xóa nhân viên khỏi cơ sở dữ liệu: " + e.getMessage(), e);
         }
     }
+public boolean UpdatePatient(Users patient) throws SQLException {
+            String sql = "UPDATE Users SET FullName = ?, Gender = ?, Dob = ?, Phone = ?, Address = ?, Status = ? WHERE UserID = ? AND Role = 'patient'";
+              try (Connection conn = dbContext.getConnection();
+                 PreparedStatement stmt = conn.prepareStatement(sql)) {
+                conn.setAutoCommit(false);
+                stmt.setString(1, patient.getFullName());
+                stmt.setString(2, patient.getGender());
+                stmt.setDate(3, patient.getDob());
+                stmt.setString(4, patient.getPhone());
+                stmt.setString(5, patient.getAddress());
+                stmt.setString(6, patient.getStatus());
+                stmt.setInt(7, patient.getUserID());
+                System.out.println("Executing update for UserID: " + patient.getUserID() + ", FullName: " + patient.getFullName());
+                int rowsAffected = stmt.executeUpdate();
+                System.out.println("Rows affected: " + rowsAffected);
+                if (rowsAffected > 0) {
+                    conn.commit();
+                    return true;
+                } else {
+                    conn.rollback();
+                    return false;
+                }
+            } catch (SQLException e) {
+                System.out.println("SQLException in UserDAO.updatePatient: " + e.getMessage());
+                throw e;
+            }
+        }
+
 }
 
 

@@ -50,7 +50,7 @@
             max-width: 500px;
             width: 100%;
             margin: 0 auto;
-            border: 2px solid #10b981; /* Added green border */
+            border: 2px solid #10b981;
         }
         .action-card h3 {
             font-size: 1.25rem;
@@ -82,9 +82,16 @@
         .user-menu-btn {
             background-color: #10b981;
             color: white;
-            padding: 8px 16px;
-            border-radius: 4px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%; /* Makes the button circular */
+            display: flex;
+            align-items: center;
+            justify-content: center;
             transition: background-color 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2rem;
         }
         .user-menu-btn:hover {
             background-color: #059669;
@@ -93,6 +100,13 @@
             background-color: #ffffff;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: absolute;
+            right: 0;
+            top: 100%;
+            margin-top: 8px;
+            min-width: 150px;
+            z-index: 10;
+            display: none;
         }
         .user-menu a {
             color: #2c3e50;
@@ -102,6 +116,9 @@
         }
         .user-menu a:hover {
             background-color: #d1fae5;
+        }
+        .user-menu.active {
+            display: block;
         }
     </style>
 </head>
@@ -121,15 +138,13 @@
             </form>
         </div>
         <!-- Header with User Menu -->
-        <div class="flex justify-end mb-6 w-full">
+        <div class="flex justify-end mb-6 w-full relative">
             <div class="relative">
-                <button id="userMenuBtn" class="user-menu-btn flex items-center space-x-2">
-                    <span>👤</span>
-                </button>
-                <div id="userMenu" class="user-menu absolute right-0 mt-2 w-48 hidden z-10">
+                <button id="userMenuBtn" class="user-menu-btn">👤</button>
+                <div id="userMenu" class="user-menu">
                     <a href="${pageContext.request.contextPath}/AdminProfileController" class="block">View Profile</a>
                     <a href="${pageContext.request.contextPath}/EditProfileAdminController" class="block">Edit Profile</a>
-                    <a href="${pageContext.request.contextPath}/LogoutServlet" class="block">Sign Out</a>
+                    <a href="${pageContext.request.contextPath}/LogoutServlet" class="block" onclick="return confirm('Bạn có chắc muốn thoát?')">Sign Out</a>
                 </div>
             </div>
         </div>
@@ -146,7 +161,12 @@
         const userMenuBtn = document.getElementById('userMenuBtn');
         const userMenu = document.getElementById('userMenu');
         userMenuBtn.addEventListener('click', function() {
-            userMenu.classList.toggle('hidden');
+            userMenu.classList.toggle('active');
+        });
+        document.addEventListener('click', function(event) {
+            if (!userMenuBtn.contains(event.target) && !userMenu.contains(event.target)) {
+                userMenu.classList.remove('active');
+            }
         });
     </script>
 </body>
