@@ -1,16 +1,10 @@
-<%--
-    Document   : AddService
-    Created on : May 23, 2025
-    Author     : Grok
---%>
-
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Thêm Dịch Vụ</title>
+        <title>Cập Nhật Dịch Vụ</title>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
         <style>
             /* Reset default styles */
@@ -115,7 +109,8 @@
                 font-size: 16px;
             }
 
-            .form-group input[type="submit"] {
+            .form-group input[type="submit"],
+            .form-group .btn-back {
                 width: 100%;
                 padding: 14px;
                 background: linear-gradient(to right, #7B1FA2, #AB47BC);
@@ -128,9 +123,13 @@
                 transition: all 0.3s ease;
                 text-transform: uppercase;
                 letter-spacing: 1px;
+                text-decoration: none;
+                text-align: center;
+                display: block;
             }
 
-            .form-group input[type="submit"]:hover {
+            .form-group input[type="submit"]:hover,
+            .form-group .btn-back:hover {
                 background: linear-gradient(to right, #6A1B9A, #9C27B0);
                 box-shadow: 0 5px 15px rgba(123, 31, 162, 0.3);
             }
@@ -153,29 +152,30 @@
     </head>
     <body>
         <div class="container">
-            <h2>Thêm Dịch Vụ</h2>
+            <h2>Cập Nhật Dịch Vụ</h2>
             <c:if test="${not empty requestScope.error}">
                 <div class="error">${requestScope.error}</div>
             </c:if>
-            <form action="${pageContext.request.contextPath}/AddServiceServlet" method="post" id="serviceForm">
+            <form action="${pageContext.request.contextPath}/UpdateServiceServlet" method="post" id="serviceForm">
+                <input type="hidden" name="serviceID" value="${service.serviceID}">
                 <div class="form-group">
                     <label for="serviceName">Tên Dịch Vụ:</label>
                     <div class="input-box">
-                        <input type="text" id="serviceName" name="serviceName" value="${sessionScope.formData.serviceName}" placeholder="Nhập tên dịch vụ" required>
+                        <input type="text" id="serviceName" name="serviceName" value="${service.serviceName}" placeholder="Nhập tên dịch vụ" required>
                         <i class="fas fa-briefcase-medical"></i>
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="description">Mô Tả:</label>
                     <div class="input-box">
-                        <textarea id="description" name="description" placeholder="Nhập mô tả dịch vụ">${sessionScope.formData.description}</textarea>
+                        <textarea id="description" name="description" placeholder="Nhập mô tả dịch vụ">${service.description}</textarea>
                         <i class="fas fa-align-left"></i>
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="price">Giá (VNĐ):</label>
                     <div class="input-box">
-                        <input type="number" id="price" name="price" value="${sessionScope.formData.price}" placeholder="Nhập giá dịch vụ" min="0" step="1000" required>
+                        <input type="number" id="price" name="price" value="${service.price}" placeholder="Nhập giá dịch vụ" min="0" step="1000" required>
                         <i class="fas fa-money-bill"></i>
                     </div>
                 </div>
@@ -183,15 +183,18 @@
                     <label for="status">Trạng Thái:</label>
                     <div class="input-box">
                         <select id="status" name="status" required>
-                            <option value="" disabled ${empty sessionScope.formData.status ? 'selected' : ''}>Chọn trạng thái</option>
-                            <option value="Active" ${sessionScope.formData.status == 'Active' ? 'selected' : ''}>Active</option>
-                            <option value="Inactive" ${sessionScope.formData.status == 'Inactive' ? 'selected' : ''}>Inactive</option>
+                            <option value="" disabled>Chọn trạng thái</option>
+                            <option value="Active" ${service.status == 'Active' ? 'selected' : ''}>Active</option>
+                            <option value="Inactive" ${service.status == 'Inactive' ? 'selected' : ''}>Inactive</option>
                         </select>
                         <i class="fas fa-toggle-on"></i>
                     </div>
                 </div>
                 <div class="form-group">
-                    <input type="submit" value="Thêm Dịch Vụ">
+                    <input type="submit" value="Cập Nhật Dịch Vụ">
+                </div>
+                <div class="form-group">
+                    <a href="${pageContext.request.contextPath}/ViewServiceServlet" class="btn-back">Quay lại</a>
                 </div>
             </form>
         </div>

@@ -9,24 +9,70 @@
         <title>Chi tiết Bệnh Nhân</title>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
         <style>
+            body {
+                background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+                font-family: 'Segoe UI', Arial, sans-serif;
+            }
+
+            .container {
+                background: #ffffff;
+                padding: 40px;
+                border-radius: 15px;
+                box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+                margin-top: 40px;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .container::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 5px;
+                background: linear-gradient(to right, #1976d2, #64b5f6);
+            }
+
+            h2 {
+                text-align: center;
+                color: #2c3e50;
+                margin-bottom: 30px;
+                font-size: 28px;
+                font-weight: 600;
+                letter-spacing: 1px;
+            }
+
+            .btn-primary {
+                background: linear-gradient(to right, #1976d2, #64b5f6);
+                border: none;
+                transition: all 0.3s ease;
+            }
+
+            .btn-primary:hover {
+                background: linear-gradient(to right, #1565c0, #42a5f5);
+                box-shadow: 0 5px 15px rgba(25, 118, 210, 0.3);
+            }
+
             .detail-card {
-                background-color: #fff;
+                background-color: #f9fafb;
                 border-radius: 8px;
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
                 padding: 20px;
                 margin-bottom: 20px;
             }
+
             .detail-label {
                 font-weight: bold;
-                color: #333;
+                color: #2c3e50;
             }
+
             .detail-value {
                 color: #555;
             }
         </style>
     </head>
-    <body class="bg-light">
-        <div class="container mt-5">
+    <body>
+        <div class="container">
             <div class="d-flex justify-content-start mb-3">
                 <a href="${pageContext.request.contextPath}/views/admin/dashboard.jsp" class="btn btn-primary">Home</a>
             </div>

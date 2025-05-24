@@ -1,9 +1,3 @@
-<%--
-    Document   : ViewService
-    Created on : May 23, 2025
-    Author     : Grok
---%>
-
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.util.List" %>
 <%@ page import="model.entity.Services" %>
@@ -73,14 +67,14 @@
             }
 
             .btn-info {
-                background: linear-gradient(to right, #7B1FA2, #AB47BC);
+                background: linear-gradient(to right, #2e7d32, #66bb6a);
                 border: none;
                 transition: all 0.3s ease;
             }
 
             .btn-info:hover {
-                background: linear-gradient(to right, #6A1B9A, #9C27B0);
-                box-shadow: 0 5px 15px rgba(123, 31, 162, 0.3);
+                background: linear-gradient(to right, #1b5e20, #4caf50);
+                box-shadow: 0 5px 15px rgba(46, 125, 50, 0.3);
             }
 
             .btn-danger {
@@ -110,13 +104,10 @@
     </head>
     <body>
         <div class="container">
-            <!-- Home button in top-left corner -->
             <div class="d-flex justify-content-start mb-3">
                 <a href="${pageContext.request.contextPath}/views/admin/dashboard.jsp" class="btn btn-primary">Home</a>
             </div>
-
             <h2 class="text-center mb-4">Danh Sách Dịch Vụ</h2>
-
             <div class="d-flex justify-content-end mb-3">
                 <a href="${pageContext.request.contextPath}/views/admin/AddService.jsp" class="btn btn-success">Thêm Dịch Vụ</a>
             </div>
@@ -126,7 +117,6 @@
                         <tr>
                             <th>ID</th>
                             <th>Tên Dịch Vụ</th>
-                            <th>Mô Tả</th>
                             <th>Giá (VNĐ)</th>
                             <th>Trạng Thái</th>
                             <th>Ngày Tạo</th>
@@ -141,7 +131,6 @@
                                     <tr class="text-center">
                                         <td>${service.serviceID}</td>
                                         <td>${service.serviceName}</td>
-                                        <td>${service.description}</td>
                                         <td>
                                             <fmt:formatNumber value="${service.price}" type="number" pattern="#,##0" />
                                         </td>
@@ -162,7 +151,7 @@
                             </c:when>
                             <c:otherwise>
                                 <tr>
-                                    <td colspan="8" class="text-center">Không có dữ liệu</td>
+                                    <td colspan="7" class="text-center">Không có dữ liệu</td>
                                 </tr>
                             </c:otherwise>
                         </c:choose>

@@ -63,6 +63,28 @@ public class Services_Service {
         service.setUpdatedAt(Date.valueOf(LocalDate.now()));
         return servicesDAO.updateService(service); // Return the boolean result from DAO
     }
+    public boolean deleteService(int serviceId) throws SQLException {
+        System.out.println("Checking if service exists with ID: " + serviceId );
+        try {
+            Services existingService = servicesDAO.getServiceById(serviceId);
+            if (existingService == null) {
+                System.out.println("Service not found with ID: " + serviceId);
+                throw new SQLException("Dịch vụ với ID " + serviceId + " không tồn tại.");
+            }
+            System.out.println("Attempting to delete service with ID: " + serviceId );
+            boolean deleted = servicesDAO.deleteService(serviceId);
+            if (deleted) {
+                System.out.println("Service deleted successfully: ID=" + serviceId);
+            } else {
+                System.out.println("Failed to delete service with ID: " + serviceId );
+                throw new SQLException("Không thể xóa dịch vụ với ID: " + serviceId);
+            }
+            return deleted;
+        } catch (SQLException e) {
+            System.out.println("Database error while deleting service with ID: " + serviceId + " - " + e.getMessage());
+            throw e;
+        }
+    }
 
     public Services getServiceById(int serviceId) throws SQLException {
         Services service = servicesDAO.getServiceById(serviceId);

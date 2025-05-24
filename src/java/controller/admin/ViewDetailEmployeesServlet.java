@@ -11,8 +11,8 @@ import model.service.UserService;
 import java.io.IOException;
 import java.sql.SQLException;
 
-@WebServlet(name = "ViewDetailDoctorNurseServlet", urlPatterns = {"/ViewDoctorNurseDetailServlet"})
-public class ViewDetailDoctorNurseServlet extends HttpServlet {
+@WebServlet(name = "ViewDetailEmployeesServlet", urlPatterns = {"/ViewDetailEmployeesServlet"})
+public class ViewDetailEmployeesServlet extends HttpServlet {
 
     private UserService userService;
 
@@ -35,13 +35,13 @@ public class ViewDetailDoctorNurseServlet extends HttpServlet {
             } else {
                 System.out.println("Không tìm thấy employee với UserID=" + id + " hoặc Role không phải doctor/nurse/receptionist tại 08:58 AM +07, 23/05/2025");
             }
-            request.getRequestDispatcher("/views/admin/ViewDetailDoctorNurse.jsp").forward(request, response);
+            request.getRequestDispatcher("/views/admin/ViewDetailEmployees.jsp").forward(request, response);
         } catch (NumberFormatException e) {
             System.out.println("Lỗi: ID không hợp lệ tại 08:58 AM +07, 23/05/2025: " + e.getMessage());
             request.setAttribute("error", "ID không hợp lệ");
             request.getRequestDispatcher("/views/error.jsp").forward(request, response);
         } catch (SQLException e) {
-            System.out.println("Lỗi SQL trong ViewDetailDoctorNurseServlet tại 08:58 AM +07, 23/05/2025: " + e.getMessage());
+            System.out.println("Lỗi SQL trong ViewDetailEmployees tại 08:58 AM +07, 23/05/2025: " + e.getMessage());
             e.printStackTrace();
             request.setAttribute("error", "Lỗi không xác định: " + e.getMessage());
             request.getRequestDispatcher("/views/error.jsp").forward(request, response);

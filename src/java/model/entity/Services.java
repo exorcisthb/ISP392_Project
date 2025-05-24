@@ -4,10 +4,6 @@
  */
 package model.entity;
 import java.sql.Date;
-/**
- *
- * @author exorc
- */
 public class Services {
     private int serviceID;
     private String serviceName;

@@ -13,8 +13,8 @@ import java.sql.Date;
 import java.sql.SQLException;
 import java.time.LocalDate;
 
-@WebServlet(name = "EditEmployeeServlet", urlPatterns = {"/EditEmployeeServlet"})
-public class EditEmployeeServlet extends HttpServlet {
+@WebServlet(name = "UpdateEmployeeServlet", urlPatterns = {"/UpdateEmployeeServlet"})
+public class UpdateEmployeeServlet extends HttpServlet {
 
     private UserService userService;
 
@@ -33,18 +33,18 @@ public class EditEmployeeServlet extends HttpServlet {
                 Users employee = userService.getEmployeeByID(userID);
                 if (employee != null) {
                     request.setAttribute("employee", employee);
-                    request.getRequestDispatcher("/views/admin/editDoctor.jsp").forward(request, response);
+                    request.getRequestDispatcher("/views/admin/UpdateEmployees.jsp").forward(request, response);
                 } else {
                     request.setAttribute("error", "Không tìm thấy nhân viên để chỉnh sửa.");
-                    request.getRequestDispatcher("/views/admin/editDoctor.jsp").forward(request, response);
+                    request.getRequestDispatcher("/views/admin/UpdateEmployees.jsp").forward(request, response);
                 }
             } catch (NumberFormatException | SQLException e) {
                 request.setAttribute("error", "Lỗi khi tải thông tin nhân viên: " + e.getMessage());
-                request.getRequestDispatcher("/views/admin/editDoctor.jsp").forward(request, response);
+                request.getRequestDispatcher("/views/admin/UpdateEmployees.jsp").forward(request, response);
             }
         } else {
             request.setAttribute("error", "ID không hợp lệ.");
-            request.getRequestDispatcher("/views/admin/editDoctor.jsp").forward(request, response);
+            request.getRequestDispatcher("/views/admin/UpdateEmployees.jsp").forward(request, response);
         }
     }
 
@@ -151,6 +151,6 @@ public class EditEmployeeServlet extends HttpServlet {
         request.setAttribute("formSpecialization", specialization);
         request.setAttribute("formDob", dob);
         request.setAttribute("formStatus", status != null ? status : "Active");
-        request.getRequestDispatcher("/views/admin/editDoctor.jsp").forward(request, response);
+        request.getRequestDispatcher("/views/admin/UpdateEmployees.jsp").forward(request, response);
     }
 }

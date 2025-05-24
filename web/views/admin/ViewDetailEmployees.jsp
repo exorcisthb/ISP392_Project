@@ -9,6 +9,40 @@
         <title>Chi tiết Bác Sĩ / Y Tá</title>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
         <style>
+            body {
+                background: linear-gradient(135deg, #fff3e0, #ffe082); /* Thay đổi màu nền giống ViewEmployee */
+                font-family: 'Segoe UI', Arial, sans-serif; /* Giữ font đồng bộ */
+            }
+
+            .container {
+                background: #ffffff;
+                padding: 40px;
+                border-radius: 15px;
+                box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+                margin-top: 40px;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .container::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 5px;
+                background: linear-gradient(to right, #f57f17, #ffca28); /* Gradient giống ViewEmployee */
+            }
+
+            h2 {
+                text-align: center;
+                color: #2c3e50;
+                margin-bottom: 30px;
+                font-size: 28px;
+                font-weight: 600;
+                letter-spacing: 1px;
+            }
+
             .detail-card {
                 background-color: #fff;
                 border-radius: 8px;
@@ -16,17 +50,30 @@
                 padding: 20px;
                 margin-bottom: 20px;
             }
+
             .detail-label {
                 font-weight: bold;
                 color: #333;
             }
+
             .detail-value {
                 color: #555;
             }
+
+            .btn-primary {
+                background: linear-gradient(to right, #f57f17, #ffca28); /* Thay đổi màu nút giống ViewEmployee */
+                border: none;
+                transition: all 0.3s ease;
+            }
+
+            .btn-primary:hover {
+                background: linear-gradient(to right, #e65100, #ffb300); /* Hover giống ViewEmployee */
+                box-shadow: 0 5px 15px rgba(245, 127, 23, 0.3);
+            }
         </style>
     </head>
-    <body class="bg-light">
-        <div class="container mt-5">
+    <body>
+        <div class="container">
             <div class="d-flex justify-content-start mb-3">
                 <a href="${pageContext.request.contextPath}/views/admin/dashboard.jsp" class="btn btn-primary">Home</a>
             </div>
