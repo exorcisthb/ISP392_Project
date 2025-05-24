@@ -8,11 +8,19 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.sql.Date;
+import java.time.LocalDate;
 import model.entity.Users;
 import model.service.UserService;
 
 @WebServlet(name = "EditProfileUserController", urlPatterns = {"/EditProfileUserController"})
 public class EditProfileUserController extends HttpServlet {
+
+    private UserService userService;
+
+    @Override
+    public void init() throws ServletException {
+        userService = new UserService();
+    }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -42,24 +50,73 @@ public class EditProfileUserController extends HttpServlet {
             return;
         }
 
-        try {
-            // Lấy dữ liệu chung
-            String fullName = request.getParameter("fullName");
-            String dobStr = request.getParameter("dob");
-            String gender = request.getParameter("gender");
-            String phone = request.getParameter("phone");
-            String address = request.getParameter("address");
+        // Lấy dữ liệu chung
+        String fullName = request.getParameter("fullName");
+        String dobStr = request.getParameter("dob");
+        String gender = request.getParameter("gender");
+        String phone = request.getParameter("phone");
+        String address = request.getParameter("address");
+        String specialization = request.getParameter("specialization");
+        String medicalHistory = request.getParameter("medicalHistory");
 
-            // Parse ngày sinh
-            Date dob = null;
-            if (dobStr != null && !dobStr.isEmpty()) {
+        try {
+            // Validate dữ liệu
+            // Validate fullName using service method
+            userService.validateFullName(fullName);
+
+            // Validate dob
+            if (dobStr == null || dobStr.trim().isEmpty()) {
+                throw new ServletException("Ngày sinh không được để trống.");
+            }
+            Date dob;
+            try {
                 dob = Date.valueOf(dobStr);
+                LocalDate currentDate = LocalDate.now();
+                LocalDate dobDate = dob.toLocalDate();
+                if (dobDate.isAfter(currentDate)) {
+                    throw new ServletException("Ngày sinh không được vượt quá ngày hiện tại.");
+                }
+            } catch (IllegalArgumentException e) {
+                throw new ServletException("Định dạng ngày sinh không hợp lệ: " + dobStr);
+            }
+
+            // Validate gender
+            if (gender == null || gender.trim().isEmpty()) {
+                throw new ServletException("Giới tính không được để trống.");
+            }
+            String mappedGender = gender.trim();
+            // Chấp nhận cả giá trị từ form ("Nam", "Nữ", "Khác") và từ cơ sở dữ liệu ("Male", "Female", "Other")
+            if (mappedGender.equals("Nam") || mappedGender.equals("Male")) {
+                mappedGender = "Male";
+            } else if (mappedGender.equals("Nữ") || mappedGender.equals("Female")) {
+                mappedGender = "Female";
+            } else if (mappedGender.equals("Khác") || mappedGender.equals("Other")) {
+                mappedGender = "Other";
+            } else {
+                throw new ServletException("Giới tính không hợp lệ: " + gender);
+            }
+
+            // Validate phone
+            if (phone != null && !phone.trim().isEmpty()) {
+                if (!phone.matches("\\d{10}")) {
+                    throw new ServletException("Số điện thoại phải có đúng 10 chữ số.");
+                }
+                if (userService.isPhoneExists(phone) && !phone.equals(user.getPhone())) {
+                    throw new ServletException("Số điện thoại đã tồn tại.");
+                }
+            } else {
+                phone = null; // Cho phép số điện thoại rỗng
+            }
+
+            // Validate address
+            if (address == null || address.trim().isEmpty()) {
+                throw new ServletException("Địa chỉ không được để trống.");
             }
 
             // Cập nhật thông tin chung
-            user.setFullName(fullName);
+            user.setFullName(fullName.trim());
             user.setDob(dob);
-            user.setGender(gender);
+            user.setGender(mappedGender);
             user.setPhone(phone);
             user.setAddress(address);
 
@@ -68,14 +125,18 @@ public class EditProfileUserController extends HttpServlet {
             switch (role) {
                 case "doctor":
                 case "nurse":
-                    String specialization = request.getParameter("specialization");
-                    user.setSpecialization(specialization);
+                    if (specialization == null || specialization.trim().isEmpty()) {
+                        throw new ServletException("Chuyên khoa không được để trống cho Bác sĩ hoặc Y tá.");
+                    }
+                    user.setSpecialization(specialization.trim());
                     user.setMedicalHistory(null);
                     break;
 
                 case "patient":
-                    String medicalHistory = request.getParameter("medicalHistory");
-                    user.setMedicalHistory(medicalHistory);
+                    if (medicalHistory == null || medicalHistory.trim().isEmpty()) {
+                        throw new ServletException("Tiền sử bệnh lý không được để trống.");
+                    }
+                    user.setMedicalHistory(medicalHistory.trim());
                     user.setSpecialization(null);
                     break;
 
@@ -89,14 +150,21 @@ public class EditProfileUserController extends HttpServlet {
             }
 
             // Gọi Service cập nhật
-            UserService userService = new UserService(); // Sử dụng UserService thay vì UserDAO
             userService.updateUserProfile(user);
             session.setAttribute("user", user);
             request.setAttribute("success", "Cập nhật hồ sơ thành công.");
-            
+
         } catch (Exception e) {
             e.printStackTrace();
+            // Lưu trữ dữ liệu form để hiển thị lại khi có lỗi
             request.setAttribute("error", "Lỗi cập nhật hồ sơ: " + e.getMessage());
+            request.setAttribute("formFullName", fullName);
+            request.setAttribute("formDob", dobStr);
+            request.setAttribute("formGender", gender);
+            request.setAttribute("formPhone", phone);
+            request.setAttribute("formAddress", address);
+            request.setAttribute("formSpecialization", specialization);
+            request.setAttribute("formMedicalHistory", medicalHistory);
         }
 
         // Quay lại đúng trang JSP theo vai trò
@@ -116,7 +184,7 @@ public class EditProfileUserController extends HttpServlet {
             case "receptionist":
                 return "/views/user/Receptionist/EditProfileReceptionist.jsp";
             default:
-                return null;
+                return "/views/common/error.jsp";
         }
     }
 
