@@ -1,13 +1,155 @@
 /*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ * Document   : ServicesDAO
+ * Created on : May 23, 2025
+ * Author     : Grok
  */
 package model.dao;
 
-/**
- *
- * @author exorc
- */
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import model.entity.Services;
+
 public class ServicesDAO {
-    
+
+    private static final String INSERT_SERVICE_SQL = "INSERT INTO Services (ServiceName, [Description], Price, [Status], CreatedBy, CreatedAt, UpdatedAt) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    private static final String UPDATE_SERVICE_SQL = "UPDATE Services SET ServiceName = ?, [Description] = ?, Price = ?, [Status] = ?, UpdatedAt = GETDATE() WHERE ServiceID = ?";
+    private static final String SELECT_SERVICE_BY_ID = "SELECT ServiceID, ServiceName, [Description], Price, [Status], CreatedBy, CreatedAt, UpdatedAt FROM Services WHERE ServiceID = ?";
+    private static final String SELECT_ALL_SERVICES = "SELECT ServiceID, ServiceName, [Description], Price, [Status], CreatedBy, CreatedAt, UpdatedAt FROM Services";
+    private static final String CHECK_SERVICE_NAME_EXISTS = "SELECT COUNT(*) FROM Services WHERE ServiceName = ?";
+
+    private final DBContext dbContext;
+
+    public ServicesDAO() {
+        this.dbContext = DBContext.getInstance();
+    }
+
+    private void validateService(Services service) throws SQLException {
+        if (service.getServiceName() == null || service.getServiceName().trim().isEmpty()) {
+            throw new SQLException("Tên dịch vụ không được để trống.");
+        }
+        if (service.getStatus() == null || service.getStatus().trim().isEmpty()) {
+            throw new SQLException("Trạng thái dịch vụ không được để trống.");
+        }
+        if (service.getPrice() < 0) {
+            throw new SQLException("Giá dịch vụ không được âm.");
+        }
+    }
+
+    public boolean isServiceNameExists(String serviceName) throws SQLException {
+        if (serviceName == null || serviceName.trim().isEmpty()) {
+            return false;
+        }
+        try (Connection conn = dbContext.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(CHECK_SERVICE_NAME_EXISTS)) {
+            stmt.setString(1, serviceName.trim());
+            System.out.println("Checking if service name exists: " + serviceName + " at " + LocalDateTime.now() + " +07");
+            try (ResultSet rs = stmt.executeQuery()) {
+                boolean exists = rs.next() && rs.getInt(1) > 0;
+                System.out.println("Service name exists: " + exists + " for ServiceName=" + serviceName + " at " + LocalDateTime.now() + " +07");
+                return exists;
+            }
+        }
+    }
+
+    public boolean addService(Services service, int createdBy) throws SQLException {
+        validateService(service);
+
+        if (isServiceNameExists(service.getServiceName())) {
+            throw new SQLException("Tên dịch vụ đã tồn tại.");
+        }
+
+        try (Connection conn = dbContext.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(INSERT_SERVICE_SQL)) {
+            stmt.setString(1, service.getServiceName() != null ? service.getServiceName().trim() : null);
+            stmt.setString(2, service.getDescription() != null ? service.getDescription().trim() : null);
+            stmt.setDouble(3, service.getPrice());
+            stmt.setString(4, service.getStatus() != null ? service.getStatus().trim() : null);
+            stmt.setInt(5, createdBy);
+            stmt.setTimestamp(6, service.getCreatedAt() != null ? new Timestamp(service.getCreatedAt().getTime()) : new Timestamp(System.currentTimeMillis()));
+            stmt.setTimestamp(7, service.getUpdatedAt() != null ? new Timestamp(service.getUpdatedAt().getTime()) : new Timestamp(System.currentTimeMillis()));
+
+            System.out.println("Executing SQL: " + INSERT_SERVICE_SQL + " with values ServiceName=" + service.getServiceName() + ", Price=" + service.getPrice() + ", Status=" + service.getStatus() + " at " + LocalDateTime.now() + " +07");
+            int rowsAffected = stmt.executeUpdate();
+            System.out.println("Rows affected: " + rowsAffected + " for ServiceName=" + service.getServiceName() + " at " + LocalDateTime.now() + " +07");
+            return rowsAffected > 0;
+        }
+    }
+
+    public boolean updateService(Services service) throws SQLException {
+        validateService(service);
+
+        try (Connection conn = dbContext.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(CHECK_SERVICE_NAME_EXISTS + " AND ServiceID != ?")) {
+            stmt.setString(1, service.getServiceName() != null ? service.getServiceName().trim() : "");
+            stmt.setInt(2, service.getServiceID());
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next() && rs.getInt(1) > 0) {
+                    throw new SQLException("Tên dịch vụ đã tồn tại.");
+                }
+            }
+        }
+
+        try (Connection conn = dbContext.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(UPDATE_SERVICE_SQL)) {
+            stmt.setString(1, service.getServiceName() != null ? service.getServiceName().trim() : null);
+            stmt.setString(2, service.getDescription() != null ? service.getDescription().trim() : null);
+            stmt.setDouble(3, service.getPrice());
+            stmt.setString(4, service.getStatus() != null ? service.getStatus().trim() : null);
+            stmt.setInt(5, service.getServiceID());
+
+            System.out.println("Executing SQL: " + UPDATE_SERVICE_SQL + " for ServiceID=" + service.getServiceID() + " at " + LocalDateTime.now() + " +07");
+            int rowsAffected = stmt.executeUpdate();
+            System.out.println("Rows affected: " + rowsAffected + " for ServiceID=" + service.getServiceID() + " at " + LocalDateTime.now() + " +07");
+            return rowsAffected > 0;
+        }
+    }
+
+    public Services getServiceById(int serviceId) throws SQLException {
+        try (Connection conn = dbContext.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(SELECT_SERVICE_BY_ID)) {
+            stmt.setInt(1, serviceId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    Services service = new Services();
+                    service.setServiceID(rs.getInt("ServiceID"));
+                    service.setServiceName(rs.getString("ServiceName"));
+                    service.setDescription(rs.getString("Description"));
+                    service.setPrice(rs.getDouble("Price"));
+                    service.setStatus(rs.getString("Status"));
+                    service.setCreatedBy(rs.getObject("CreatedBy") != null ? rs.getInt("CreatedBy") : 0);
+                    service.setCreatedAt(rs.getTimestamp("CreatedAt") != null ? new java.sql.Date(rs.getTimestamp("CreatedAt").getTime()) : null);
+                    service.setUpdatedAt(rs.getTimestamp("UpdatedAt") != null ? new java.sql.Date(rs.getTimestamp("UpdatedAt").getTime()) : null);
+                    return service;
+                }
+            }
+        }
+        throw new SQLException("Dịch vụ với ID " + serviceId + " không tồn tại.");
+    }
+
+    public List<Services> getAllServices() throws SQLException {
+        List<Services> services = new ArrayList<>();
+        try (Connection conn = dbContext.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(SELECT_ALL_SERVICES);
+             ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                Services service = new Services();
+                service.setServiceID(rs.getInt("ServiceID"));
+                service.setServiceName(rs.getString("ServiceName"));
+                service.setDescription(rs.getString("Description"));
+                service.setPrice(rs.getDouble("Price"));
+                service.setStatus(rs.getString("Status"));
+                service.setCreatedBy(rs.getObject("CreatedBy") != null ? rs.getInt("CreatedBy") : 0);
+                service.setCreatedAt(rs.getTimestamp("CreatedAt") != null ? new java.sql.Date(rs.getTimestamp("CreatedAt").getTime()) : null);
+                service.setUpdatedAt(rs.getTimestamp("UpdatedAt") != null ? new java.sql.Date(rs.getTimestamp("UpdatedAt").getTime()) : null);
+                services.add(service);
+            }
+        }
+        return services;
+    }
 }
