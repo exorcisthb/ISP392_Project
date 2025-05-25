@@ -438,6 +438,44 @@ public boolean deleteEmployee(int userID) throws SQLException {
             throw new SQLException("Lỗi khi xóa nhân viên khỏi cơ sở dữ liệu: " + e.getMessage(), e);
         }
     }
+// Tìm kiếm gần đúng (dùng cho chức năng Search Employee)
+   public List<Users> searchEmployeesByEmailOrUsername(String query) throws SQLException {
+        List<Users> employees = new ArrayList<>();
+        String sql = "SELECT * FROM Users WHERE (email LIKE ? OR username LIKE ?) AND role IN ('doctor', 'nurse', 'receptionist')";
+        try (Connection conn = dbContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, "%" + query + "%");//Tìm kiếm trên username
+            stmt.setString(2, "%" + query + "%");//Tìm kiếm trên email
+            
+           ResultSet rs = stmt.executeQuery();
+
+        while (rs.next()) {
+            Users user = new Users();
+            user.setUserID(rs.getInt("UserID"));
+            user.setUsername(rs.getString("Username"));
+            user.setPassword(rs.getString("Password"));
+            user.setEmail(rs.getString("Email"));
+            user.setFullName(rs.getString("FullName"));
+            user.setDob(rs.getDate("Dob"));
+            user.setGender(rs.getString("Gender"));
+            user.setPhone(rs.getString("Phone"));
+            user.setAddress(rs.getString("Address"));
+            user.setMedicalHistory(rs.getString("MedicalHistory"));
+            user.setSpecialization(rs.getString("Specialization"));
+            user.setRole(rs.getString("Role"));
+            user.setStatus(rs.getString("Status"));
+            user.setCreatedBy(rs.getObject("CreatedBy") != null ? rs.getInt("CreatedBy") : null);
+            user.setCreatedAt(rs.getDate("CreatedAt"));
+            user.setUpdatedAt(rs.getDate("UpdatedAt"));
+            employees.add(user);        
+        }
+    } catch (SQLException e) {
+            System.err.println("Lỗi khi tìm kiếm nhân viên: " + e.getMessage());
+            throw e; // Ném ngoại lệ để xử lý ở cấp cao hơn
+        }
+    
+return employees;
+ 
+        }
 public boolean UpdatePatient(Users patient) throws SQLException {
             String sql = "UPDATE Users SET FullName = ?, Gender = ?, Dob = ?, Phone = ?, Address = ?, Status = ? WHERE UserID = ? AND Role = 'patient'";
               try (Connection conn = dbContext.getConnection();

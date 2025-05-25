@@ -1,8 +1,4 @@
-/*
- * Document   : ServicesDAO
- * Created on : May 23, 2025
- * Author     : Grok
- */
+
 package model.dao;
 
 import java.sql.Connection;
@@ -21,7 +17,7 @@ public class ServicesDAO {
     private static final String UPDATE_SERVICE_SQL = "UPDATE Services SET ServiceName = ?, [Description] = ?, Price = ?, [Status] = ?, UpdatedAt = GETDATE() WHERE ServiceID = ?";
     private static final String SELECT_SERVICE_BY_ID = "SELECT ServiceID, ServiceName, [Description], Price, [Status], CreatedBy, CreatedAt, UpdatedAt FROM Services WHERE ServiceID = ?";
     private static final String SELECT_ALL_SERVICES = "SELECT ServiceID, ServiceName, [Description], Price, [Status], CreatedBy, CreatedAt, UpdatedAt FROM Services";
-    private static final String CHECK_SERVICE_NAME_EXISTS = "SELECT COUNT(*) FROM Services WHERE ServiceName = ?";
+    private static final String CHECK_SERVICE_NAME_AND_PRICE_EXISTS = "SELECT COUNT(*) FROM Services WHERE ServiceName = ? AND Price = ?";
     private static final String DELETE_SERVICE_SQL = "DELETE FROM Services WHERE ServiceID = ?";
 
     private final DBContext dbContext;
@@ -29,10 +25,12 @@ public class ServicesDAO {
     public ServicesDAO() {
         this.dbContext = DBContext.getInstance();
     }
-
-    private void validateServiceName(String serviceName) throws SQLException {
+private void validateServiceName(String serviceName) throws SQLException {
         if (serviceName == null || serviceName.trim().isEmpty()) {
             throw new SQLException("Tên không được để trống.");
+        }
+         if (!serviceName.trim().matches("^[\\p{L}0-9\\s-]+$")) {
+            throw new SQLException("Tên dịch vụ không hợp lệ");
         }
     }
 
@@ -58,16 +56,17 @@ public class ServicesDAO {
         validateStatus(service.getStatus());
     }
 
-    public boolean isServiceNameExists(String serviceName) throws SQLException {
+    public boolean isServiceNameAndPriceExists(String serviceName, double price) throws SQLException {
         if (serviceName == null || serviceName.trim().isEmpty()) {
             return false;
         }
-        try (Connection conn = dbContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(CHECK_SERVICE_NAME_EXISTS)) {
+        try (Connection conn = dbContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(CHECK_SERVICE_NAME_AND_PRICE_EXISTS)) {
             stmt.setString(1, serviceName.trim());
-            System.out.println("Checking if service name exists: " + serviceName + " at " + LocalDateTime.now() + " +07");
+            stmt.setDouble(2, price);
+            System.out.println("Checking if service name and price exists: ServiceName=" + serviceName + ", Price=" + price + " at " + LocalDateTime.now() + " +07");
             try (ResultSet rs = stmt.executeQuery()) {
                 boolean exists = rs.next() && rs.getInt(1) > 0;
-                System.out.println("Service name exists: " + exists + " for ServiceName=" + serviceName + " at " + LocalDateTime.now() + " +07");
+                System.out.println("Service name and price exists: " + exists + " for ServiceName=" + serviceName + ", Price=" + price + " at " + LocalDateTime.now() + " +07");
                 return exists;
             }
         }
@@ -76,8 +75,8 @@ public class ServicesDAO {
     public boolean addService(Services service, int createdBy) throws SQLException {
         validateService(service);
 
-        if (isServiceNameExists(service.getServiceName())) {
-            throw new SQLException("Tên dịch vụ đã tồn tại.");
+        if (isServiceNameAndPriceExists(service.getServiceName(), service.getPrice())) {
+            throw new SQLException("Dịch vụ đã tồn tại");
         }
 
         try (Connection conn = dbContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(INSERT_SERVICE_SQL)) {
@@ -98,14 +97,14 @@ public class ServicesDAO {
 
     public boolean updateService(Services service) throws SQLException {
         validateService(service);
-        
 
-        try (Connection conn = dbContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(CHECK_SERVICE_NAME_EXISTS + " AND ServiceID != ?")) {
+        try (Connection conn = dbContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(CHECK_SERVICE_NAME_AND_PRICE_EXISTS + " AND ServiceID != ?")) {
             stmt.setString(1, service.getServiceName() != null ? service.getServiceName().trim() : "");
-            stmt.setInt(2, service.getServiceID());
+            stmt.setDouble(2, service.getPrice());
+            stmt.setInt(3, service.getServiceID());
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next() && rs.getInt(1) > 0) {
-                    throw new SQLException("Tên dịch vụ đã tồn tại.");
+                    throw new SQLException("Dịch vụ đã tồn tại");
                 }
             }
         }

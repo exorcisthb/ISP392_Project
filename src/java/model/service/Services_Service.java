@@ -11,10 +11,6 @@ import java.util.List;
 import model.dao.ServicesDAO;
 import model.entity.Services;
 
-/**
- *
- * @author exorc
- */
 public class Services_Service {
     private ServicesDAO servicesDAO;
 
@@ -22,24 +18,39 @@ public class Services_Service {
         servicesDAO = new ServicesDAO();
     }
 
-    public void addService(Services service, int adminId) throws SQLException, IllegalArgumentException {
-        if (service.getServiceName() == null || service.getServiceName().trim().isEmpty()) {
-            throw new IllegalArgumentException("Tên dịch vụ không được để trống.");
+   public void addService(Services service, int adminId) throws SQLException, IllegalArgumentException {
+        try {
+            // Validate service
+            if (service.getServiceName() == null || service.getServiceName().trim().isEmpty()) {
+                throw new IllegalArgumentException("Tên dịch vụ không được để trống.");
+            }
+            if (service.getPrice() < 0) {
+                throw new IllegalArgumentException("Giá dịch vụ không hợp lệ");
+            }
+            if (service.getStatus() == null || service.getStatus().trim().isEmpty()) {
+                throw new IllegalArgumentException("Trạng thái dịch vụ không được để trống.");
+            }
+            if (servicesDAO.isServiceNameAndPriceExists(service.getServiceName(), service.getPrice())) {
+                throw new IllegalArgumentException("Dịch vụ này đã tồn tại");
+            }
+
+            // Set timestamps and creator
+            service.setCreatedBy(adminId);
+            Date currentDate = Date.valueOf(LocalDate.now());
+            service.setCreatedAt(currentDate);
+            service.setUpdatedAt(currentDate);
+
+            // Delegate to DAO
+            servicesDAO.addService(service, adminId);
+        } catch (SQLException e) {
+            // Handle validation exceptions from DAO
+            if (e.getMessage().contains("Tên dịch vụ không hợp lệ")) {
+                throw new IllegalArgumentException("Tên dịch vụ không hợp lệ");
+            } else if (e.getMessage().contains("Tên không được để trống")) {
+                throw new IllegalArgumentException("Tên dịch vụ không được để trống.");
+            }
+            throw e; // Re-throw other SQL exceptions
         }
-        if (service.getPrice() < 0) {
-            throw new IllegalArgumentException("Giá dịch vụ không được âm.");
-        }
-        if (service.getStatus() == null || service.getStatus().trim().isEmpty()) {
-            throw new IllegalArgumentException("Trạng thái dịch vụ không được để trống.");
-        }
-        if (servicesDAO.isServiceNameExists(service.getServiceName())) {
-            throw new IllegalArgumentException("Tên dịch vụ đã tồn tại.");
-        }
-        service.setCreatedBy(adminId);
-        Date currentDate = Date.valueOf(LocalDate.now());
-        service.setCreatedAt(currentDate);
-        service.setUpdatedAt(currentDate);
-        servicesDAO.addService(service, adminId);
     }
 
     public boolean updateService(Services service) throws SQLException, IllegalArgumentException {
@@ -47,7 +58,7 @@ public class Services_Service {
             throw new IllegalArgumentException("Tên dịch vụ không được để trống.");
         }
         if (service.getPrice() < 0) {
-            throw new IllegalArgumentException("Giá dịch vụ không được âm.");
+            throw new IllegalArgumentException("Giá dịch vụ không hợp lệ");
         }
         if (service.getStatus() == null || service.getStatus().trim().isEmpty()) {
             throw new IllegalArgumentException("Trạng thái dịch vụ không được để trống.");
@@ -56,13 +67,16 @@ public class Services_Service {
         if (existingService == null) {
             throw new IllegalArgumentException("Dịch vụ với ID " + service.getServiceID() + " không tồn tại.");
         }
-        if (!service.getServiceName().trim().equals(existingService.getServiceName()) && 
-            servicesDAO.isServiceNameExists(service.getServiceName())) {
-            throw new IllegalArgumentException("Tên dịch vụ đã tồn tại.");
+        if (!service.getServiceName().trim().equals(existingService.getServiceName()) || 
+            service.getPrice() != existingService.getPrice()) {
+            if (servicesDAO.isServiceNameAndPriceExists(service.getServiceName(), service.getPrice())) {
+                throw new IllegalArgumentException("Dịch vụ này đã tồn tại");
+            }
         }
         service.setUpdatedAt(Date.valueOf(LocalDate.now()));
         return servicesDAO.updateService(service); // Return the boolean result from DAO
     }
+
     public boolean deleteService(int serviceId) throws SQLException {
         System.out.println("Checking if service exists with ID: " + serviceId );
         try {
@@ -98,7 +112,7 @@ public class Services_Service {
         return servicesDAO.getAllServices();
     }
 
-    public boolean isServiceNameExists(String serviceName) throws SQLException {
-        return servicesDAO.isServiceNameExists(serviceName);
+    public boolean isServiceNameAndPriceExists(String serviceName, double price) throws SQLException {
+        return servicesDAO.isServiceNameAndPriceExists(serviceName, price);
     }
 }

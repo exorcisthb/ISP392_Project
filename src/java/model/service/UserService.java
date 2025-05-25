@@ -307,4 +307,9 @@ public class UserService {
         throw new SQLException("Lỗi khi cập nhật bệnh nhân: " + e.getMessage(), e);
     }
 }
+    // Phương thức này dùng cho chức năng tìm kiếm nhân viên (gần đúng)
+    public List<Users> searchEmployeesByEmailOrUsername(String query) throws SQLException {
+        return userDAO.searchEmployeesByEmailOrUsername(query);
+    }
+
 }
