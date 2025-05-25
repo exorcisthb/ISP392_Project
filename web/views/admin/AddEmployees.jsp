@@ -212,6 +212,13 @@
                         <i class="fas fa-user-circle"></i>
                     </div>
                 </div>
+                          <div class="form-group">
+                    <label for="email" class="form-label">Email</label>
+                    <div class="input-box">
+                        <input type="email" class="form-control" id="email" name="email" value="${requestScope.email}" placeholder="Nhập email" required>
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                </div>
                 <div class="form-group">
                     <label for="password" class="form-label">Mật khẩu</label>
                     <div class="input-box">
@@ -219,13 +226,7 @@
                         <i class="fas fa-lock"></i>
                     </div>
                 </div>
-                <div class="form-group">
-                    <label for="email" class="form-label">Email</label>
-                    <div class="input-box">
-                        <input type="email" class="form-control" id="email" name="email" value="${requestScope.email}" placeholder="Nhập email" required>
-                        <i class="fas fa-envelope"></i>
-                    </div>
-                </div>
+              
                 <div class="form-group">
                     <label for="phone" class="form-label">Số điện thoại</label>
                     <div class="input-box">
