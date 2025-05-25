@@ -97,37 +97,86 @@ private void validateUsername(String username) throws SQLException {
 }
    
 
-    // Tìm người dùng trong Users dựa trên email hoặc username
+   // Tìm kiếm chính xác (dùng cho chức năng đăng nhập)
     public Users findUserByEmailOrUsername(String emailOrUsername) throws SQLException {
-        String sql = "SELECT * FROM Users WHERE email = ? OR username = ?";
-        try (Connection conn = dbContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, emailOrUsername);
-            stmt.setString(2, emailOrUsername);
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    Users user = new Users();
-                    user.setUserID(rs.getInt("userID"));
-                    user.setUsername(rs.getString("username"));
-                    user.setPassword(rs.getString("password"));
-                    user.setEmail(rs.getString("email"));
-                    user.setFullName(rs.getString("fullName"));
-                    user.setDob(rs.getDate("dob"));
-                    user.setGender(rs.getString("gender"));
-                    user.setPhone(rs.getString("phone"));
-                    user.setAddress(rs.getString("address"));
-                    user.setMedicalHistory(rs.getString("medicalHistory"));
-                    user.setSpecialization(rs.getString("specialization"));
-                    user.setRole(rs.getString("role"));
-                    user.setStatus(rs.getString("status"));
-                    user.setCreatedBy(rs.getInt("createdBy"));
-                    user.setCreatedAt(rs.getDate("createdAt"));
-                    user.setUpdatedAt(rs.getDate("updatedAt"));
-                    return user;
-                }
+        Users user = null;
+        String sql = "SELECT * FROM users WHERE (username = ? OR email = ?)";
+        
+        try (Connection conn = DBContext.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, emailOrUsername); // Tìm kiếm chính xác username
+            stmt.setString(2, emailOrUsername); // Tìm kiếm chính xác email
+            ResultSet rs = stmt.executeQuery();
+            
+            if (rs.next()) {
+                user = new Users();
+                user.setUserID(rs.getInt("userID"));
+                user.setUsername(rs.getString("username"));
+                user.setPassword(rs.getString("password"));
+                user.setEmail(rs.getString("email"));
+                user.setFullName(rs.getString("fullName"));
+                user.setDob(rs.getDate("dob"));
+                user.setGender(rs.getString("gender"));
+                user.setPhone(rs.getString("phone"));
+                user.setAddress(rs.getString("address"));
+                user.setMedicalHistory(rs.getString("medicalHistory"));
+                user.setSpecialization(rs.getString("specialization"));
+                user.setRole(rs.getString("role"));
+                user.setStatus(rs.getString("status"));
+                user.setCreatedBy(rs.getObject("createdBy") != null ? rs.getInt("createdBy") : null);
+                user.setCreatedAt(rs.getDate("createdAt"));
+                user.setUpdatedAt(rs.getDate("updatedAt"));
             }
+        } catch (SQLException e) {
+            System.err.println("Lỗi khi tìm kiếm user: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
         }
-        return null;
+        return user;
     }
+    // Tìm kiếm gần đúng (dùng cho chức năng Search Employee)
+    public List<Users> searchEmployees(String keyword) throws SQLException {
+        List<Users> list = new ArrayList<>();
+        String sql = "SELECT * FROM Users " +
+                 "WHERE role IN ('doctor', 'nurse', 'receptionist') " +
+                 "AND (fullName LIKE ? OR email LIKE ?)";
+    try (Connection conn = dbContext.getConnection(); 
+         PreparedStatement stmt = conn.prepareStatement(sql)) {
+        
+        String searchPattern = "%" + keyword + "%";
+        stmt.setString(1, searchPattern);
+        stmt.setString(2, searchPattern);            
+        
+        try(ResultSet rs = stmt.executeQuery()){
+          while (rs.next()) {
+            Users user = new Users();
+            user.setUserID(rs.getInt("UserID"));
+            user.setUsername(rs.getString("Username"));
+            user.setPassword(rs.getString("Password"));
+            user.setEmail(rs.getString("Email"));
+            user.setFullName(rs.getString("FullName"));
+            user.setDob(rs.getDate("Dob"));
+            user.setGender(rs.getString("Gender"));
+            user.setPhone(rs.getString("Phone"));
+            user.setAddress(rs.getString("Address"));
+            user.setMedicalHistory(rs.getString("MedicalHistory"));
+            user.setSpecialization(rs.getString("Specialization"));
+            user.setRole(rs.getString("Role"));
+            user.setStatus(rs.getString("Status"));
+            user.setCreatedBy(rs.getObject("CreatedBy") != null ? rs.getInt("CreatedBy") : null);
+            user.setCreatedAt(rs.getDate("CreatedAt"));
+            user.setUpdatedAt(rs.getDate("UpdatedAt"));
+                list.add(user);
+        }
+    } catch (SQLException e) {
+            System.err.println("Lỗi khi tìm kiếm nhân viên: " + e.getMessage());
+            throw e; // Ném ngoại lệ để xử lý ở cấp cao hơn
+        }
+    
+return list;
+    }
+        }
+
 
     // Cập nhật thông tin hồ sơ của user
     public void updateUserProfile(Users user) throws SQLException {
@@ -438,44 +487,7 @@ public boolean deleteEmployee(int userID) throws SQLException {
             throw new SQLException("Lỗi khi xóa nhân viên khỏi cơ sở dữ liệu: " + e.getMessage(), e);
         }
     }
-// Tìm kiếm gần đúng (dùng cho chức năng Search Employee)
-   public List<Users> searchEmployeesByEmailOrUsername(String query) throws SQLException {
-        List<Users> employees = new ArrayList<>();
-        String sql = "SELECT * FROM Users WHERE (email LIKE ? OR username LIKE ?) AND role IN ('doctor', 'nurse', 'receptionist')";
-        try (Connection conn = dbContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, "%" + query + "%");//Tìm kiếm trên username
-            stmt.setString(2, "%" + query + "%");//Tìm kiếm trên email
-            
-           ResultSet rs = stmt.executeQuery();
 
-        while (rs.next()) {
-            Users user = new Users();
-            user.setUserID(rs.getInt("UserID"));
-            user.setUsername(rs.getString("Username"));
-            user.setPassword(rs.getString("Password"));
-            user.setEmail(rs.getString("Email"));
-            user.setFullName(rs.getString("FullName"));
-            user.setDob(rs.getDate("Dob"));
-            user.setGender(rs.getString("Gender"));
-            user.setPhone(rs.getString("Phone"));
-            user.setAddress(rs.getString("Address"));
-            user.setMedicalHistory(rs.getString("MedicalHistory"));
-            user.setSpecialization(rs.getString("Specialization"));
-            user.setRole(rs.getString("Role"));
-            user.setStatus(rs.getString("Status"));
-            user.setCreatedBy(rs.getObject("CreatedBy") != null ? rs.getInt("CreatedBy") : null);
-            user.setCreatedAt(rs.getDate("CreatedAt"));
-            user.setUpdatedAt(rs.getDate("UpdatedAt"));
-            employees.add(user);        
-        }
-    } catch (SQLException e) {
-            System.err.println("Lỗi khi tìm kiếm nhân viên: " + e.getMessage());
-            throw e; // Ném ngoại lệ để xử lý ở cấp cao hơn
-        }
-    
-return employees;
- 
-        }
 public boolean UpdatePatient(Users patient) throws SQLException {
             String sql = "UPDATE Users SET FullName = ?, Gender = ?, Dob = ?, Phone = ?, Address = ?, Status = ? WHERE UserID = ? AND Role = 'patient'";
               try (Connection conn = dbContext.getConnection();

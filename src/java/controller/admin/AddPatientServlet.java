@@ -5,6 +5,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import model.entity.Users;
 import model.service.UserService;
 
@@ -12,6 +13,7 @@ import java.io.IOException;
 import java.sql.Date;
 import java.sql.SQLException;
 
+@WebServlet(name = "AddPatientServlet", urlPatterns = {"/AddPatientServlet"})
 public class AddPatientServlet extends HttpServlet {
     private UserService userService;
 
@@ -23,12 +25,6 @@ public class AddPatientServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Kiểm tra quyền Admin
-        Users loggedInUser = (Users) request.getSession().getAttribute("loggedInUser");
-        if (loggedInUser == null || !"Admin".equalsIgnoreCase(loggedInUser.getRole())) {
-            response.sendRedirect(request.getContextPath() + "/views/common/login.jsp");
-            return;
-        }
         // Hiển thị form thêm bệnh nhân
         request.getRequestDispatcher("/views/admin/AddPatient.jsp").forward(request, response);
     }
@@ -36,86 +32,77 @@ public class AddPatientServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Kiểm tra quyền Admin
-        Users loggedInUser = (Users) request.getSession().getAttribute("loggedInUser");
-        if (loggedInUser == null || !"Admin".equalsIgnoreCase(loggedInUser.getRole())) {
-            response.sendRedirect(request.getContextPath() + "/views/common/login.jsp");
-            return;
-        }
-
         // Lấy dữ liệu từ form
-        String fullName = request.getParameter("fullName");
-        String dobStr = request.getParameter("dob");
+       String fullName = request.getParameter("fullName");
         String gender = request.getParameter("gender");
+        String dobStr = request.getParameter("dob");
         String email = request.getParameter("email");
         String phone = request.getParameter("phone");
+        String address = request.getParameter("address");
         String username = request.getParameter("username");
         String password = request.getParameter("password");
-        String address = request.getParameter("address");
-        String medicalHistory = request.getParameter("medicalHistory");
+        
+        // Giữ lại dữ liệu đã nhập (nếu lỗi)
+        request.setAttribute("fullName", fullName);
+        request.setAttribute("gender", gender);
+        request.setAttribute("dob", dobStr);
+        request.setAttribute("email", email);
+        request.setAttribute("phone", phone);
+        request.setAttribute("address", address);
+        request.setAttribute("username", username);
+        request.setAttribute("password", password);
 
+        // Validate các trường bắt buộc
+        if (fullName == null || fullName.trim().isEmpty() ||
+            gender == null || gender.trim().isEmpty() ||
+            dobStr == null || dobStr.trim().isEmpty() ||
+            email == null || email.trim().isEmpty() ||
+            username == null || username.trim().isEmpty() ||
+            password == null || password.trim().isEmpty()) {
+            request.setAttribute("error", "Vui lòng điền đầy đủ các trường bắt buộc.");
+            request.getRequestDispatcher("/views/admin/AddPatient.jsp").forward(request, response);
+            return;
+        }
         // Parse ngày sinh
-        Date dob = null;
-        if (dobStr != null && !dobStr.isEmpty()) {
-            try {
-                dob = Date.valueOf(dobStr);
-            } catch (IllegalArgumentException e) {
-                request.setAttribute("error", "Ngày sinh không hợp lệ");
-                request.getRequestDispatcher("/views/admin/AddPatient.jsp").forward(request, response);
-                return;
-            }
-        }
-
-        // Kiểm tra các trường bắt buộc tối thiểu
-        if (fullName == null || fullName.trim().isEmpty()) {
-            request.setAttribute("error", "Tên đầy đủ là bắt buộc");
-            request.getRequestDispatcher("/views/admin/AddPatient.jsp").forward(request, response);
-            return;
-        }
-        if (email == null || email.trim().isEmpty()) {
-            request.setAttribute("error", "Email là bắt buộc");
-            request.getRequestDispatcher("/views/admin/AddPatient.jsp").forward(request, response);
-            return;
-        }
-        if (username == null || username.trim().isEmpty()) {
-            request.setAttribute("error", "Tên đăng nhập (username) là bắt buộc");
-            request.getRequestDispatcher("/views/admin/AddPatient.jsp").forward(request, response);
-            return;
-        }
-        if (password == null || password.trim().isEmpty()) {
-            request.setAttribute("error", "Mật khẩu là bắt buộc");
-            request.getRequestDispatcher("/views/admin/AddPatient.jsp").forward(request, response);
-            return;
-        }
-
+        Date dob;
         try {
-            boolean success = userService.addUser(
-                    fullName,
-                    gender,
-                    dob,
-                    null,           // specialization null cho patient
-                    "Patient",      // role
-                    "Active",       // status mặc định
-                    email,
-                    phone,
-                    address,
-                    username,
-                    password,
-                    medicalHistory,
-                    loggedInUser.getUserID() // createdBy
-            );
+            dob = Date.valueOf(dobStr);
+        } catch (IllegalArgumentException e) {
+            request.setAttribute("error", "Ngày sinh không hợp lệ.");
+            request.getRequestDispatcher("/views/admin/AddPatient.jsp").forward(request, response);
+            return;
+        }
 
+        
+      try {
+            // Lấy adminId từ session (người tạo)
+            HttpSession session = request.getSession();
+            Integer createdBy = (Integer) session.getAttribute("adminId");
+            if (createdBy == null) {
+                // Nếu không có adminId, bạn có thể xử lý khác như redirect về login
+                createdBy = 35; // Hoặc một giá trị mặc định
+            }
+            // Role mặc định là "patient"
+            String role = "patient";
+            // Status mặc định "Active"
+            String status = "Active";
+
+            // Call UserService to add the user
+            boolean success = userService.addUser(fullName, gender, dob, null, role, status, email, phone, address, username, password, createdBy);
             if (success) {
-                // Thêm thành công => chuyển hướng sang danh sách bệnh nhân
-                response.sendRedirect(request.getContextPath() + "/admin/ViewPatientServlet");
+                session.setAttribute("successMessage", "Thêm bệnh nhân thành công!");
+                response.sendRedirect(request.getContextPath() + "/views/admin/ViewPatients.jsp");
             } else {
-                request.setAttribute("error", "Lỗi khi thêm bệnh nhân: Không thể thêm dữ liệu");
-                request.getRequestDispatcher("/views/admin/AddPatient.jsp").forward(request, response);
+                request.setAttribute("error", "Không thể thêm bệnh nhân. Email, username hoặc số điện thoại có thể đã tồn tại.");
+                request.getRequestDispatcher("views/admin/AddPatient.jsp").forward(request, response); 
             }
         } catch (SQLException e) {
-            // Lỗi do duplicate hoặc validate từ service
+            e.printStackTrace();
             request.setAttribute("error", "Lỗi khi thêm bệnh nhân: " + e.getMessage());
-            request.getRequestDispatcher("/views/admin/AddPatient.jsp").forward(request, response);
+            request.getRequestDispatcher("views/admin/AddPatient.jsp").forward(request, response); 
+        } catch (IllegalArgumentException e) {
+            request.setAttribute("error", e.getMessage());
+            request.getRequestDispatcher("views/admin/AddPatient.jsp").forward(request, response); // Quay lại form để sửa
         }
     }
 }

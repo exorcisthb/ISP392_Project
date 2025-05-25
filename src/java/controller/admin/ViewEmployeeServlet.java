@@ -10,6 +10,8 @@ import model.service.UserService;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ViewEmployeeServlet extends HttpServlet {
 
@@ -20,12 +22,22 @@ public class ViewEmployeeServlet extends HttpServlet {
         userService = new UserService();
     }
 
-    @Override
+  @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        String keyword = request.getParameter("keyword");
+        List<Users> employees = null;
+
         try {
-            List<Users> employees = userService.getAllEmployee(); // sửa tên cho đúng chuẩn service
+            if (keyword != null && !keyword.trim().isEmpty()) {
+                employees = userService.searchEmployees(keyword.trim());
+            } else {
+                employees = userService.getAllEmployee(); // tên service đã dùng
+            }
+
             request.setAttribute("employees", employees);
+            request.setAttribute("keyword", keyword); // để giữ lại keyword trong ô input nếu cần
+
         } catch (SQLException e) {
             e.printStackTrace();
             request.setAttribute("error", "Lỗi khi tải danh sách bác sĩ/y tá: " + e.getMessage());

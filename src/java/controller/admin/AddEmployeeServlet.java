@@ -97,15 +97,15 @@ public class AddEmployeeServlet extends HttpServlet {
                 response.sendRedirect(request.getContextPath() + "/views/admin/ViewEmployees.jsp");
             } else {
                 request.setAttribute("error", "Không thể thêm nhân viên. Email, username hoặc số điện thoại có thể đã tồn tại.");
-                request.getRequestDispatcher("views/admin/AddDoctorNurse.jsp").forward(request, response); // Quay lại form để sửa
+                request.getRequestDispatcher("views/admin/AddEmployees.jsp").forward(request, response); // Quay lại form để sửa
             }
         } catch (SQLException e) {
             e.printStackTrace();
             request.setAttribute("error", "Lỗi khi thêm nhân viên: " + e.getMessage());
-            request.getRequestDispatcher("views/admin/AddDoctorNurse.jsp").forward(request, response); // Quay lại form để sửa
+            request.getRequestDispatcher("views/admin/AddEmployees.jsp").forward(request, response); // Quay lại form để sửa
         } catch (IllegalArgumentException e) {
             request.setAttribute("error", e.getMessage());
-            request.getRequestDispatcher("views/admin/AddDoctorNurse.jsp").forward(request, response); // Quay lại form để sửa
+            request.getRequestDispatcher("views/admin/AddEmployees.jsp").forward(request, response); // Quay lại form để sửa
         }
     }
 
@@ -115,7 +115,7 @@ public class AddEmployeeServlet extends HttpServlet {
         String path = request.getServletPath();
         if (path.equals("/AddEmployeeServlet")) {
             // Forward to AddDoctorNurse.jsp for adding a new employee
-            request.getRequestDispatcher("/views/admin/AddDoctorNurse.jsp").forward(request, response);
+            request.getRequestDispatcher("/views/admin/AddEmployees.jsp").forward(request, response);
         } else if (path.equals("/admin/viewEmployees")) {
             // Forward to ViewEmployees.jsp to display the list of employees
             request.getRequestDispatcher("/views/admin/ViewEmployees.jsp").forward(request, response);

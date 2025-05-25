@@ -1,4 +1,4 @@
-<%--
+<%-- 
     Document   : AddService
     Created on : May 23, 2025
     Author     : Grok
@@ -115,7 +115,8 @@
                 font-size: 16px;
             }
 
-            .form-group input[type="submit"] {
+            .form-group input[type="submit"],
+            .form-group input[type="button"] {
                 width: 100%;
                 padding: 14px;
                 background: linear-gradient(to right, #7B1FA2, #AB47BC);
@@ -128,9 +129,11 @@
                 transition: all 0.3s ease;
                 text-transform: uppercase;
                 letter-spacing: 1px;
+                margin-bottom: 10px;
             }
 
-            .form-group input[type="submit"]:hover {
+            .form-group input[type="submit"]:hover,
+            .form-group input[type="button"]:hover {
                 background: linear-gradient(to right, #6A1B9A, #9C27B0);
                 box-shadow: 0 5px 15px rgba(123, 31, 162, 0.3);
             }
@@ -193,6 +196,9 @@
                 <div class="form-group">
                     <input type="submit" value="Thêm Dịch Vụ">
                 </div>
+                <div class="form-group">
+                    <input type="button" value="Quay Lại Danh Sách" onclick="window.history.back()">
+                </div> 
             </form>
         </div>
     </body>

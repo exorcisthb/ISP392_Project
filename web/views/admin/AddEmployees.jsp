@@ -22,7 +22,7 @@
             }
 
             body {
-                background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+                background: linear-gradient(135deg, #fff9c4, #fff176);
                 display: flex;
                 justify-content: center;
                 align-items: center;
@@ -48,7 +48,7 @@
                 left: 0;
                 width: 100%;
                 height: 5px;
-                background: linear-gradient(to right, #4CAF50, #81C784);
+                background: linear-gradient(to right, #FBC02D, #FFCA28);
             }
 
             h2 {
@@ -77,6 +77,7 @@
             .form-group input[type="email"],
             .form-group input[type="password"],
             .form-group input[type="date"],
+            .form-group input[type="tel"],
             .form-group select,
             .input-box input,
             .input-box select {
@@ -93,9 +94,9 @@
             .form-group select:focus,
             .input-box input:focus,
             .input-box select:focus {
-                border-color: #4CAF50;
+                border-color: #FBC02D;
                 background: #ffffff;
-                box-shadow: 0 0 5px rgba(76, 175, 80, 0.2);
+                box-shadow: 0 0 5px rgba(251, 192, 45, 0.2);
                 outline: none;
             }
 
@@ -108,10 +109,11 @@
                 font-size: 16px;
             }
 
-            .form-group input[type="submit"] {
+            .form-group input[type="submit"],
+            .form-group input[type="button"] {
                 width: 100%;
                 padding: 14px;
-                background: linear-gradient(to right, #4CAF50, #66BB6A);
+                background: linear-gradient(to right, #FBC02D, #FFCA28);
                 color: white;
                 border: none;
                 border-radius: 8px;
@@ -121,11 +123,13 @@
                 transition: all 0.3s ease;
                 text-transform: uppercase;
                 letter-spacing: 1px;
+                margin-bottom: 10px;
             }
 
-            .form-group input[type="submit"]:hover {
-                background: linear-gradient(to right, #45a049, #5cb85c);
-                box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+            .form-group input[type="submit"]:hover,
+            .form-group input[type="button"]:hover {
+                background: linear-gradient(to right, #F9A825, #FFB300);
+                box-shadow: 0 5px 15px rgba(251, 192, 45, 0.3);
             }
 
             .error {
@@ -154,7 +158,7 @@
                 <div class="form-group">
                     <label for="fullName">Họ và Tên:</label>
                     <div class="input-box">
-                        <input type="text" id="fullName" name="fullName" value="${sessionScope.formData.fullName}" required>
+                        <input type="text" id="fullName" name="fullName" value="${sessionScope.formData.fullName}" placeholder="Nhập họ và tên" required>
                         <i class="fas fa-user"></i>
                     </div>
                 </div>
@@ -170,7 +174,7 @@
                         <i class="fas fa-venus-mars"></i>
                     </div>
                 </div>
-                <div class="mb-3">
+                <div class="form-group">
                     <label for="dob" class="form-label">Ngày sinh</label>
                     <div class="input-box">
                         <input type="date" class="form-control" id="dob" name="dob" value="${dob}" required>
@@ -204,32 +208,32 @@
                 <div class="form-group">
                     <label for="username" class="form-label">Tên đăng nhập</label>
                     <div class="input-box">
-                        <input type="text" class="form-control" id="username" name="username" value="${requestScope.username}" placeholder="Username" required>
+                        <input type="text" class="form-control" id="username" name="username" value="${requestScope.username}" placeholder="Nhập tên đăng nhập" required>
                         <i class="fas fa-user-circle"></i>
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="password" class="form-label">Mật khẩu</label>
                     <div class="input-box">
-                        <input type="password" class="form-control" id="password" name="password" value="${requestScope.password}" placeholder="Password" required>
+                        <input type="password" class="form-control" id="password" name="password" value="${requestScope.password}" placeholder="Nhập mật khẩu" required>
                         <i class="fas fa-lock"></i>
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="email" class="form-label">Email</label>
                     <div class="input-box">
-                        <input type="email" class="form-control" id="email" name="email" value="${requestScope.email}" placeholder="Email" required>
+                        <input type="email" class="form-control" id="email" name="email" value="${requestScope.email}" placeholder="Nhập email" required>
                         <i class="fas fa-envelope"></i>
                     </div>
                 </div>
-                <div class="mb-3">
+                <div class="form-group">
                     <label for="phone" class="form-label">Số điện thoại</label>
                     <div class="input-box">
                         <input type="tel" class="form-control" id="phone" name="phone" value="${phone}" placeholder="Nhập số điện thoại (10 chữ số)" required>
                         <i class="fas fa-phone"></i>
                     </div>
                 </div>
-                <div class="mb-3">
+                <div class="form-group">
                     <label for="address" class="form-label">Địa chỉ</label>
                     <div class="input-box">
                         <input type="text" class="form-control" id="address" name="address" value="${address}" placeholder="Nhập địa chỉ" required>
@@ -238,6 +242,9 @@
                 </div>
                 <div class="form-group">
                     <input type="submit" value="Thêm Nhân Viên">
+                </div>
+                <div class="form-group">
+                    <input type="button" value="Quay Lại Danh Sach" onclick="window.history.back()">
                 </div>
             </form>
         </div>

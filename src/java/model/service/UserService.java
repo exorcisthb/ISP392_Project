@@ -308,8 +308,8 @@ public class UserService {
     }
 }
     // Phương thức này dùng cho chức năng tìm kiếm nhân viên (gần đúng)
-    public List<Users> searchEmployeesByEmailOrUsername(String query) throws SQLException {
-        return userDAO.searchEmployeesByEmailOrUsername(query);
+   public List<Users> searchEmployees(String keyword) throws SQLException {
+        return userDAO.searchEmployees(keyword);
     }
 
 }

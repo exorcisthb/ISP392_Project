@@ -100,6 +100,11 @@
             .table-light {
                 background-color: #f9fafb;
             }
+
+            .search-form {
+                max-width: 600px;
+                margin-bottom: 20px;
+            }
         </style>
     </head>
     <body>
@@ -109,53 +114,60 @@
             </div>
             <h2 class="text-center mb-4">Danh sách Nhân Viên</h2>
             
-            
-            <div class="d-flex justify-content-end mb-3">
-                <a href="${pageContext.request.contextPath}/views/admin/AddDoctorNurse.jsp" class="btn btn-success">Thêm bác sĩ / Y Tá</a>
+            <!-- FORM TÌM KIẾM -->
+            <div class="mb-3">
+                <form action="ViewEmployeeServlet" method="get" class="d-flex search-form" style="max-width: 600px;">
+                    <input type="text" name="keyword" class="form-control me-2" placeholder="Tìm theo tên, email..."
+                       value="${keyword != null ? keyword : ''}">
+                    <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+                </form>
             </div>
-            <form action="ViewEmployeeServlet" method="get">
-                <table class="table table-bordered table-hover">
-                    <thead class="table-light text-center">
-                        <tr>
-                            <th>ID</th>
-                            <th>Tên</th>
-                            <th>Giới tính</th>
-                            <th>Chuyên khoa</th>
-                            <th>Ngày sinh</th>
-                            <th>Trạng thái</th>
-                            <th>Hành động</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <c:choose>
-                            <c:when test="${not empty employees}">
-                                <c:forEach var="user" items="${employees}">
-                                    <tr class="text-center">
-                                        <td>${user.userID}</td>
-                                        <td>${user.fullName}</td>
-                                        <td>${user.gender}</td>
-                                        <td>${user.specialization}</td>
-                                        <td>
-                                            <fmt:formatDate value="${user.dob}" pattern="dd/MM/yyyy" />
-                                        </td>
-                                        <td>${user.status}</td>
-                                        <td>
-                                            <a href="${pageContext.request.contextPath}/ViewDetailEmployeesServlet?id=${user.userID}" class="btn btn-sm btn-info text-white">Xem chi tiết</a>
-                                            <a href="${pageContext.request.contextPath}/UpdateEmployeeServlet?id=${user.userID}" class="btn btn-sm btn-primary">Sửa</a>
-                                            <a href="${pageContext.request.contextPath}/DeleteDoctorServlet?id=${user.userID}" class="btn btn-sm btn-danger" onclick="return confirm('Bạn có chắc muốn xóa bác sĩ này?');">Xóa</a>
-                                        </td>
-                                    </tr>
-                                </c:forEach>
-                            </c:when>
-                            <c:otherwise>
-                                <tr>
-                                    <td colspan="7" class="text-center">Không có dữ liệu</td>
+            <div class="d-flex justify-content-end mb-3">
+                <a href="${pageContext.request.contextPath}/views/admin/AddEmployees.jsp" class="btn btn-success">Thêm Nhân Viên</a>
+            </div>
+                  
+            <!-- TABLE DANH SÁCH NHÂN VIÊN -->
+            <table class="table table-bordered table-hover">
+                <thead class="table-light text-center">
+                    <tr>
+                        <th>ID</th>
+                        <th>Tên</th>
+                        <th>Giới tính</th>
+                        <th>Chuyên khoa</th>
+                        <th>Ngày sinh</th>
+                        <th>Trạng thái</th>
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <c:choose>
+                        <c:when test="${not empty employees}">
+                            <c:forEach var="user" items="${employees}">
+                                <tr class="text-center">
+                                    <td>${user.userID}</td>
+                                    <td>${user.fullName}</td>
+                                    <td>${user.gender}</td>
+                                    <td>${user.specialization}</td>
+                                    <td>
+                                        <fmt:formatDate value="${user.dob}" pattern="dd/MM/yyyy" />
+                                    </td>
+                                    <td>${user.status}</td>
+                                    <td>
+                                        <a href="${pageContext.request.contextPath}/ViewDetailEmployeesServlet?id=${user.userID}" class="btn btn-sm btn-info text-white">Xem chi tiết</a>
+                                        <a href="${pageContext.request.contextPath}/UpdateEmployeeServlet?id=${user.userID}" class="btn btn-sm btn-primary">Sửa</a>
+                                        <a href="${pageContext.request.contextPath}/DeleteDoctorServlet?id=${user.userID}" class="btn btn-sm btn-danger" onclick="return confirm('Bạn có chắc muốn xóa bác sĩ này?');">Xóa</a>
+                                    </td>
                                 </tr>
-                            </c:otherwise>
-                        </c:choose>
-                    </tbody>
-                </table>
-            </form>
+                            </c:forEach>
+                        </c:when>
+                        <c:otherwise>
+                            <tr>
+                                <td colspan="7" class="text-center">Không có dữ liệu</td>
+                            </tr>
+                        </c:otherwise>
+                    </c:choose>
+                </tbody>
+            </table>
         </div>
     </body>
 </html>
