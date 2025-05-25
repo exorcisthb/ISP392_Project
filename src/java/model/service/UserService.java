@@ -114,12 +114,19 @@ public class UserService {
         }
     }
 
-    // Validate DOB: must not exceed current date
+    // Validate DOB: must be between 1900 and current date
     private void validateDob(Date dob) throws IllegalArgumentException {
-        LocalDate currentDate = LocalDate.now(); // Current date: 08:56 AM +07 on Friday, May 23, 2025
+        LocalDate currentDate = LocalDate.now(); // Current date: 06:09 PM +07, Sunday, May 25, 2025
         LocalDate dobDate = dob.toLocalDate();
+        
+        // Kiểm tra năm sinh không vượt quá thời gian hiện tại
         if (dobDate.isAfter(currentDate)) {
             throw new IllegalArgumentException("Năm sinh không được vượt quá thời gian thực.");
+        }
+        
+        // Kiểm tra năm sinh không nhỏ hơn 1900
+        if (dobDate.getYear() < 1900) {
+            throw new IllegalArgumentException("Năm sinh phải từ năm 1900 trở lên.");
         }
     }
 
@@ -186,7 +193,7 @@ public class UserService {
         user.setPhone(phone);
         user.setAddress(address);
         user.setUsername(username);
-        user.setPassword(password); // Consider encrypting password here if needed
+        user.setPassword(password); // Password should already be hashed by caller (e.g., AddEmployeeServlet)
         user.setCreatedBy(createdBy);
 
         // Call DAO to add user
@@ -260,56 +267,57 @@ public class UserService {
         }
         return userDAO.deleteEmployee(userID);
     }
+
     public boolean UpdatePatient(Users user) throws SQLException {
-    try {
-        // Validate required fields
-        if (user.getFullName() == null || user.getFullName().trim().isEmpty()) {
-            throw new SQLException("Họ và tên không được để trống.");
-        }
-        if (user.getDob() == null) {
-            throw new SQLException("Ngày sinh không được để trống.");
-        }
-        if (user.getGender() == null || user.getGender().trim().isEmpty()) {
-            throw new SQLException("Giới tính không được để trống.");
-        }
-        if (user.getPhone() == null || user.getPhone().trim().isEmpty() || !user.getPhone().matches("\\d{10}")) {
-            throw new SQLException("Số điện thoại phải là 10 chữ số.");
-        }
-        if (user.getAddress() == null || user.getAddress().trim().isEmpty()) {
-            throw new SQLException("Địa chỉ không được để trống.");
-        }
+        try {
+            // Validate required fields
+            if (user.getFullName() == null || user.getFullName().trim().isEmpty()) {
+                throw new SQLException("Họ và tên không được để trống.");
+            }
+            if (user.getDob() == null) {
+                throw new SQLException("Ngày sinh không được để trống.");
+            }
+            if (user.getGender() == null || user.getGender().trim().isEmpty()) {
+                throw new SQLException("Giới tính không được để trống.");
+            }
+            if (user.getPhone() == null || user.getPhone().trim().isEmpty() || !user.getPhone().matches("\\d{10}")) {
+                throw new SQLException("Số điện thoại phải là 10 chữ số.");
+            }
+            if (user.getAddress() == null || user.getAddress().trim().isEmpty()) {
+                throw new SQLException("Địa chỉ không được để trống.");
+            }
 
-        // Map gender to match database values
-        String mappedGender = user.getGender().trim();
-        System.out.println("Original gender: " + mappedGender);
-        if (mappedGender.equals("Nam")) {
-            mappedGender = "Male";
-        } else if (mappedGender.equals("Nữ")) {
-            mappedGender = "Female";
-        } else {
-            throw new SQLException("Giới tính không hợp lệ: " + user.getGender());
-        }
-        user.setGender(mappedGender);
-        System.out.println("Mapped gender: " + mappedGender);
+            // Map gender to match database values
+            String mappedGender = user.getGender().trim();
+            System.out.println("Original gender: " + mappedGender);
+            if (mappedGender.equals("Nam")) {
+                mappedGender = "Male";
+            } else if (mappedGender.equals("Nữ")) {
+                mappedGender = "Female";
+            } else {
+                throw new SQLException("Giới tính không hợp lệ: " + user.getGender());
+            }
+            user.setGender(mappedGender);
+            System.out.println("Mapped gender: " + mappedGender);
 
-        // Ensure status is valid (default to "Active" if not provided)
-        if (user.getStatus() == null || user.getStatus().trim().isEmpty()) {
-            user.setStatus("Active");
-        } else if (!user.getStatus().equals("Active") && !user.getStatus().equals("Inactive")) {
-            throw new SQLException("Trạng thái không hợp lệ.");
-        }
+            // Ensure status is valid (default to "Active" if not provided)
+            if (user.getStatus() == null || user.getStatus().trim().isEmpty()) {
+                user.setStatus("Active");
+            } else if (!user.getStatus().equals("Active") && !user.getStatus().equals("Inactive")) {
+                throw new SQLException("Trạng thái không hợp lệ.");
+            }
 
-        boolean result = userDAO.UpdatePatient(user); // Sử dụng UpdatePatient cho vai trò Patient
-        System.out.println("DAO updatePatient result: " + result);
-        return result;
-    } catch (SQLException e) {
-        System.out.println("SQLException in UserService.updatePatient: " + e.getMessage());
-        throw new SQLException("Lỗi khi cập nhật bệnh nhân: " + e.getMessage(), e);
+            boolean result = userDAO.UpdatePatient(user); // Sử dụng UpdatePatient cho vai trò Patient
+            System.out.println("DAO updatePatient result: " + result);
+            return result;
+        } catch (SQLException e) {
+            System.out.println("SQLException in UserService.updatePatient: " + e.getMessage());
+            throw new SQLException("Lỗi khi cập nhật bệnh nhân: " + e.getMessage(), e);
+        }
     }
-}
+
     // Phương thức này dùng cho chức năng tìm kiếm nhân viên (gần đúng)
-   public List<Users> searchEmployees(String keyword) throws SQLException {
+    public List<Users> searchEmployees(String keyword) throws SQLException {
         return userDAO.searchEmployees(keyword);
     }
-
 }

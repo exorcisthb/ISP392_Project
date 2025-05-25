@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.service.UserService;
+import org.mindrot.jbcrypt.BCrypt; // Thêm import cho BCrypt
 
 @WebServlet(name = "AddEmployeeServlet", urlPatterns = {"/AddEmployeeServlet", "/admin/viewEmployees"})
 public class AddEmployeeServlet extends HttpServlet {
@@ -72,7 +73,7 @@ public class AddEmployeeServlet extends HttpServlet {
             Date dob;
             try {
                 dob = Date.valueOf(dobStr);
-                LocalDate currentDate = LocalDate.now(); // 05:59 PM +07, Sunday, May 25, 2025
+                LocalDate currentDate = LocalDate.now(); // 06:04 PM +07, Sunday, May 25, 2025
                 LocalDate dobDate = dob.toLocalDate();
                 if (dobDate.isAfter(currentDate)) {
                     throw new IllegalArgumentException("Ngày sinh không được vượt quá thời gian thực.");
@@ -125,6 +126,9 @@ public class AddEmployeeServlet extends HttpServlet {
                 throw new IllegalArgumentException("Mật khẩu phải có ít nhất 8 ký tự, 1 chữ cái in hoa, 1 ký tự đặc biệt và 1 số.");
             }
 
+            // Mã hóa mật khẩu bằng BCrypt
+            String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
+
             // Get the admin ID from session
             HttpSession session = request.getSession();
             Integer createdBy = (Integer) session.getAttribute("adminId");
@@ -135,8 +139,8 @@ public class AddEmployeeServlet extends HttpServlet {
             // Set default status as "Active"
             String status = "Active";
 
-            // Call UserService to add the user
-            boolean success = userService.addUser(fullName, gender, dob, specialization, role, status, email, phone, address, username, password, createdBy);
+            // Call UserService to add the user with hashed password
+            boolean success = userService.addUser(fullName, gender, dob, specialization, role, status, email, phone, address, username, hashedPassword, createdBy);
             if (success) {
                 // Set success message in session and redirect to ViewEmployeeServlet
                 session.setAttribute("successMessage", "Thêm nhân viên thành công!");
