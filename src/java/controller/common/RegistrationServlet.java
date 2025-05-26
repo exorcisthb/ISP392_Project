@@ -79,6 +79,7 @@ public class RegistrationServlet extends HttpServlet {
         }
 
         try {
+            // Gọi registerUser với fullName là null
             if (userService.registerUser(username, email, password, role, null)) {
                 HttpSession session = request.getSession();
                 session.setAttribute("successMessage", "Đã đăng ký thành công, vui lòng đăng nhập!");
@@ -89,10 +90,32 @@ public class RegistrationServlet extends HttpServlet {
                 request.getRequestDispatcher("/views/common/login.jsp").forward(request, response);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
-            request.setAttribute("error", "Lỗi khi đăng ký: " + e.getMessage());
-            request.setAttribute("form", "register"); // Stay on registration form
-            request.getRequestDispatcher("/views/common/login.jsp").forward(request, response);
+            // Kiểm tra nếu lỗi là do fullName (vì fullName là null trong bước đăng ký)
+            if (e.getMessage().contains("Tên không được để trống")) {
+                try {
+                    // Đăng ký lại mà không yêu cầu fullName
+                    // Giả định UserService có thể xử lý fullName là null hoặc bạn cần chỉnh sửa UserService
+                    if (userService.registerUser(username, email, password, role, null)) {
+                        HttpSession session = request.getSession();
+                        session.setAttribute("successMessage", "Đã đăng ký thành công, vui lòng đăng nhập và hoàn thiện hồ sơ!");
+                        response.sendRedirect(request.getContextPath() + "/UserLoginController");
+                    } else {
+                        request.setAttribute("error", "Username hoặc Email đã tồn tại.");
+                        request.setAttribute("form", "register");
+                        request.getRequestDispatcher("/views/common/login.jsp").forward(request, response);
+                    }
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                    request.setAttribute("error", "Lỗi khi đăng ký: " + ex.getMessage());
+                    request.setAttribute("form", "register");
+                    request.getRequestDispatcher("/views/common/login.jsp").forward(request, response);
+                }
+            } else {
+                e.printStackTrace();
+                request.setAttribute("error", "Lỗi khi đăng ký: " + e.getMessage());
+                request.setAttribute("form", "register"); // Stay on registration form
+                request.getRequestDispatcher("/views/common/login.jsp").forward(request, response);
+            }
         } catch (IllegalArgumentException e) {
             request.setAttribute("error", e.getMessage());
             request.setAttribute("form", "register"); // Stay on registration form

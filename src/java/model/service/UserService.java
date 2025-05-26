@@ -17,33 +17,60 @@ public class UserService {
         this.userDAO = new UserDAO();
     }
 
-    // Đăng ký tài khoản người dùng mới
-    public boolean registerUser(String username, String email, String password, String role, String phone) throws SQLException {
-        // Kiểm tra tồn tại
+   // Đăng ký tài khoản người dùng mới
+public boolean registerUser(String username, String email, String password, String role, String phone) throws SQLException {
+    try {
+        // Kiểm tra sự tồn tại của email hoặc username
         if (userDAO.isEmailOrUsernameExists(email, username)) {
-            return false;
-        }
-        if (phone != null && !phone.trim().isEmpty() && userDAO.isPhoneExists(phone)) {
+            System.err.println("Email hoặc username đã tồn tại: " + email + " / " + username);
             return false;
         }
 
-        // Mã hóa và validate mật khẩu
+        // Kiểm tra sự tồn tại của số điện thoại (nếu có)
+        if (phone != null && !phone.trim().isEmpty()) {
+            if (userDAO.isPhoneExists(phone)) {
+                System.err.println("Số điện thoại đã tồn tại: " + phone);
+                return false;
+            }
+        } else {
+            phone = null; // Đảm bảo phone là null nếu chuỗi rỗng
+        }
+
+        // Validate và mã hóa mật khẩu
         validatePassword(password);
         String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
 
-        // Tạo đối tượng user
+        // Tạo đối tượng Users
         Users user = new Users();
         user.setUsername(username);
         user.setEmail(email);
         user.setPassword(hashedPassword);
         user.setRole(role);
         user.setPhone(phone);
-        user.setCreatedAt(new Date(System.currentTimeMillis()));
-        user.setCreatedBy(null);
+        user.setFullName(null); // Đặt rõ ràng là null trong bước đăng ký cơ bản
+        user.setDob(null);      // Đặt các trường khác là null để người dùng hoàn thiện sau
+        user.setGender(null);
+        user.setAddress(null);
+        user.setSpecialization(null);
+        user.setMedicalHistory(null); // Nếu có trường này
+        user.setStatus("Active");     // Đặt mặc định theo cấu trúc DB
+        user.setCreatedBy(null);      // Không có thông tin CreatedBy trong đăng ký cơ bản
+        user.setCreatedAt(new java.sql.Date(System.currentTimeMillis())); // Đảm bảo kiểu dữ liệu phù hợp với DB
+        user.setUpdatedAt(null);      // Đặt UpdatedAt là null (sẽ được DB tự cập nhật)
 
         // Gọi DAO để lưu vào DB
-        return userDAO.registerUserBasic(user);
+        boolean success = userDAO.registerUserBasic(user);
+        if (!success) {
+            System.err.println("Không thể đăng ký người dùng: " + username);
+        }
+        return success;
+
+    } catch (SQLException e) {
+        System.err.println("Lỗi khi đăng ký người dùng: " + e.getMessage());
+        e.printStackTrace();
+        throw e;
     }
+}
 
     // Kiểm tra username/email đã tồn tại
     public boolean isEmailOrUsernameExists(String email, String username) throws SQLException {
@@ -87,13 +114,14 @@ public class UserService {
         userDAO.updateUserProfile(user);
     }
 
-    // Validate fullName: chỉ chứa chữ cái (Unicode) và dấu cách
     public void validateFullName(String fullName) throws SQLException {
-        if (fullName == null || fullName.trim().isEmpty()) {
-            throw new SQLException("Tên không được để trống.");
-        }
-        if (!fullName.matches("^[\\p{L}\\s]+$")) {
-            throw new SQLException("Tên chỉ được chứa chữ cái và dấu cách.");
+        if (fullName != null && !fullName.trim().isEmpty()) {
+            if (!fullName.matches("^[\\p{L}\\s]+$")) {
+                throw new SQLException("Tên chỉ được chứa chữ cái và dấu cách.");
+            }
+        } else {
+            // Cho phép fullName là null hoặc chuỗi rỗng nếu phù hợp với yêu cầu
+            // Nếu muốn bắt buộc, ném lỗi: throw new SQLException("Tên không được để trống.");
         }
     }
 

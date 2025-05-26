@@ -56,15 +56,6 @@ public class UserDAO {
             }
         }
     }
-// Validate fullName: chỉ chứa chữ cái (Unicode) và dấu cách
-    public void validateFullName(String fullName) throws SQLException {
-        if (fullName == null || fullName.trim().isEmpty()) {
-            throw new SQLException("Tên không được để trống.");
-        }
-        if (!fullName.matches("^[\\p{L}\\s]+$")) {
-            throw new SQLException("Tên chỉ được chứa chữ cái và dấu cách.");
-        }
-    }
 
 // Validate username: chỉ chứa chữ cái và số
 private void validateUsername(String username) throws SQLException {
@@ -75,23 +66,35 @@ private void validateUsername(String username) throws SQLException {
         throw new SQLException("Tên đăng nhập chỉ được chứa chữ cái và số.");
     }
 }
-   public boolean registerUserBasic(Users user) throws SQLException {
-    validateEmail(user.getEmail());
-    validatePassword(user.getPassword());
-    validateFullName(user.getFullName());
-    validateUsername(user.getUsername());
-    String sql = "INSERT INTO Users (username, email, password, role, phone, createdBy, createdAt) VALUES (?, ?, ?, ?, ?, ?, ?)";
-    try (Connection conn = dbContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+public boolean registerUserBasic(Users user) throws SQLException {
+    String sql = "INSERT INTO Users (username, email, password, role, phone, fullName, dob, gender, address, specialization, createdBy) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+    try (Connection conn = dbContext.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+        // Gán giá trị cho các tham số
         stmt.setString(1, user.getUsername());
         stmt.setString(2, user.getEmail());
         stmt.setString(3, user.getPassword()); // Already hashed in Service
         stmt.setString(4, user.getRole());
-        stmt.setString(5, user.getPhone());
-        stmt.setObject(6, user.getCreatedBy(), java.sql.Types.INTEGER);
-        stmt.setDate(7, user.getCreatedAt());
-        return stmt.executeUpdate() > 0;
+
+        // Xử lý các cột không bắt buộc, để NULL nếu không có giá trị
+        stmt.setString(5, user.getPhone() != null ? user.getPhone() : null);
+        stmt.setString(6, user.getFullName() != null ? user.getFullName() : null);
+        stmt.setDate(7, user.getDob() != null ? user.getDob() : null);
+        stmt.setString(8, user.getGender() != null ? user.getGender() : null);
+        stmt.setString(9, user.getAddress() != null ? user.getAddress() : null);
+        stmt.setString(10, user.getSpecialization() != null ? user.getSpecialization() : null);
+        stmt.setObject(11, user.getCreatedBy() != null ? user.getCreatedBy() : null, java.sql.Types.INTEGER);
+
+        // Thực thi và kiểm tra kết quả
+        int rowsAffected = stmt.executeUpdate();
+        return rowsAffected > 0;
+
     } catch (SQLException e) {
         System.err.println("SQL Error in registerUserBasic: " + e.getMessage());
+        e.printStackTrace();
         throw e;
     }
 }
