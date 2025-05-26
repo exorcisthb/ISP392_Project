@@ -2,70 +2,153 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Receptionist Dashboard</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100 font-sans">
-    <div class="container mx-auto p-6">
-        <!-- Header with User Menu -->
-        <div class="flex justify-end mb-6">
-            <div class="relative">
-                <button id="userMenuBtn" class="flex items-center space-x-2 bg-gray-200 p-2 rounded-full hover:bg-gray-300 focus:outline-none">
-                    <span class="text-gray-700">👤</span>
-                </button>
-                <div id="userMenu" class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg hidden z-10">
-                    <a href="${pageContext.request.contextPath}/UserProfileController" class="block px-4 py-2 text-gray-700 hover:bg-gray-100" onclick="viewProfile()">View Profile</a>
-                    <a href="${pageContext.request.contextPath}/EditProfileUserController" class="block px-4 py-2 text-gray-700 hover:bg-gray-100" onclick="editProfile()">Edit Profile</a>
-                    <a href="${pageContext.request.contextPath}/LogoutServlet" class="block px-4 py-2 text-gray-700 hover:bg-gray-100" onclick="return confirm('Bạn có chắc muốn thoát?')">Sign Out</a>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Receptionist Dashboard</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <style>
+            body {
+                background: #e6f5e9; /* Light green background */
+                min-height: 100vh;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+            .action-card {
+                background-color: #ffffff;
+                padding: 20px;
+                border-radius: 8px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                max-width: 500px;
+                width: 100%;
+                margin: 0 auto;
+                border: 2px solid #a8d5ba; /* Darker green border */
+            }
+            .action-card h1 {
+                font-size: 1.5rem;
+                font-weight: 600;
+                margin-bottom: 16px;
+                text-align: center;
+                color: #2c3e50;
+            }
+            .action-card button {
+                display: block;
+                width: 100%;
+                padding: 10px;
+                margin-bottom: 8px;
+                border-radius: 4px;
+                text-align: center;
+                color: white;
+                text-decoration: none;
+                background-color: #a8d5ba; /* Darker green buttons */
+                border: none;
+                transition: background-color 0.3s ease;
+            }
+            .action-card button:hover {
+                background-color: #8ec2a1; /* Slightly darker green on hover */
+            }
+            .container {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+            .user-menu-btn {
+                background-color: #a8d5ba; /* Darker green for the user icon */
+                color: white;
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: background-color 0.3s ease;
+                border: none;
+                cursor: pointer;
+                font-size: 1.2rem;
+            }
+            .user-menu-btn:hover {
+                background-color: #8ec2a1; /* Slightly darker green on hover */
+            }
+            .user-menu {
+                background-color: #ffffff;
+                border-radius: 8px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                position: absolute;
+                right: 0;
+                top: 100%;
+                margin-top: 8px;
+                min-width: 150px;
+                z-index: 10;
+                display: none;
+            }
+            .user-menu a {
+                color: #2c3e50;
+                padding: 10px 16px;
+                display: block;
+                transition: background-color 0.3s ease;
+            }
+            .user-menu a:hover {
+                background-color: #e6f5e9; /* Light green hover background */
+            }
+            .user-menu.active {
+                display: block;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container mx-auto p-4">
+            <!-- Header with User Menu -->
+            <div class="flex justify-end mb-6 w-full relative">
+                <div class="relative">
+                    <button id="userMenuBtn" class="user-menu-btn">👤</button>
+                    <div id="userMenu" class="user-menu">
+                        <a href="${pageContext.request.contextPath}/UserProfileController" class="block">View Profile</a>
+                        <a href="${pageContext.request.contextPath}/EditProfileUserController" class="block">Edit Profile</a>
+                        <a href="${pageContext.request.contextPath}/LogoutServlet" class="block" onclick="return confirm('Are you sure you want to sign out?')">Sign Out</a>
+                    </div>
                 </div>
+            </div>
+            <!-- FORM TÌM KIẾM -->
+            <div class="mb-3">
+                <form action="ViewEmployeeServlet" method="get" class="d-flex search-form" style="max-width: 600px;">
+                    <input type="text" name="keyword" class="form-control me-2" placeholder="Tìm theo tên, email..."
+                           value="${keyword != null ? keyword : ''}">
+                    <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+                </form>
+            </div>
+            <!-- Main Dashboard -->
+            <div class="action-card">
+                <h1>Receptionist Dashboard</h1>
+                <button id="viewBookingListsBtn">View Booking Lists</button>
+                <button id="invoiceBtn">Invoice</button>
             </div>
         </div>
 
-        <!-- Main Dashboard -->
-        <h1 class="text-3xl font-bold mb-6 text-center">Receptionist Dashboard</h1>
+        <!-- JavaScript for interactions -->
+        <script>
+            // Toggle user menu
+            const userMenuBtn = document.getElementById('userMenuBtn');
+            const userMenu = document.getElementById('userMenu');
+            userMenuBtn.addEventListener('click', function () {
+                userMenu.classList.toggle('active');
+            });
 
-        <!-- Buttons -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <button id="viewBookingListsBtn" class="bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-600 transition duration-200">
-                View Booking Lists
-            </button>
-            <button id="invoiceBtn" class="bg-green-500 text-white p-3 rounded-lg hover:bg-green-600 transition duration-200">
-                Invoice
-            </button>
-        </div>
-    </div>
+            // Close menu when clicking outside
+            document.addEventListener('click', function (event) {
+                if (!userMenuBtn.contains(event.target) && !userMenu.contains(event.target)) {
+                    userMenu.classList.remove('active');
+                }
+            });
 
-    <!-- JavaScript for interactions -->
-    <script>
-        // Toggle user menu
-        const userMenuBtn = document.getElementById('userMenuBtn');
-        const userMenu = document.getElementById('userMenu');
-        userMenuBtn.addEventListener('click', function() {
-            userMenu.classList.toggle('hidden');
-        });
+            // Button functions (placeholder)
+            document.getElementById('viewBookingListsBtn').addEventListener('click', function () {
+                alert('The View Booking Lists feature will be opened. (Not implemented yet)');
+            });
 
-        // Close menu when clicking outside
-        document.addEventListener('click', function(event) {
-            if (!userMenuBtn.contains(event.target) && !userMenu.contains(event.target)) {
-                userMenu.classList.add('hidden');
-            }
-        });
-
-        // Button functions (placeholder)
-        document.getElementById('viewBookingListsBtn').addEventListener('click', function() {
-            alert('Chức năng View Booking Lists sẽ được mở. (Chưa triển khai)');
-        });
-
-        document.getElementById('invoiceBtn').addEventListener('click', function() {
-            alert('Chức năng Invoice sẽ được mở. (Chưa triển khai)');
-        });
-
-
-
-
-    </script>
-</body>
+            document.getElementById('invoiceBtn').addEventListener('click', function () {
+                alert('The Invoice feature will be opened. (Not implemented yet)');
+            });
+        </script>
+    </body>
 </html>

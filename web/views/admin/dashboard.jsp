@@ -124,18 +124,16 @@
 </head>
 <body>
     <div class="container mx-auto p-4">
-        <!-- Search Bar -->
-        <div class="search-container">
-            <form action="admin_dashboard.jsp" method="GET">
-                <input
-                    type="text"
-                    name="query"
-                    placeholder="Search for staff, services, patients..."
-                    class="w-full p-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500"
-                    value="<%= request.getParameter("query") != null ? request.getParameter("query") : "" %>"
-                />
-                <span class="search-icon">🔍</span>
-            </form>
+      
+                <!-- FORM TÌM KIẾM -->
+                <div class="mb-3">
+                    <form action="ViewEmployeeServlet" method="get" class="d-flex search-form" style="max-width: 600px;">
+                        <input type="text" name="keyword" class="form-control me-2" placeholder="Tìm theo tên, email..."
+                               value="${keyword != null ? keyword : ''}">
+                        <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+                    </form>
+                </div>
+           
         </div>
         <!-- Header with User Menu -->
         <div class="flex justify-end mb-6 w-full relative">
