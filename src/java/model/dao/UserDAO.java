@@ -137,48 +137,63 @@ public boolean registerUserBasic(Users user) throws SQLException {
         }
         return user;
     }
-    // Tìm kiếm gần đúng (dùng cho chức năng Search Employee)
     public List<Users> searchEmployees(String keyword) throws SQLException {
-        List<Users> list = new ArrayList<>();
-        String sql = "SELECT * FROM Users " +
+    List<Users> list = new ArrayList<>();
+    String sql = "SELECT * FROM Users " +
                  "WHERE role IN ('doctor', 'nurse', 'receptionist') " +
-                 "AND (fullName LIKE ? OR email LIKE ?)";
+                 "AND (UserID = ? OR fullName LIKE ? OR gender LIKE ? OR specialization LIKE ? OR YEAR(dob) = ?)";
     try (Connection conn = dbContext.getConnection(); 
          PreparedStatement stmt = conn.prepareStatement(sql)) {
         
         String searchPattern = "%" + keyword + "%";
-        stmt.setString(1, searchPattern);
-        stmt.setString(2, searchPattern);            
+        int id;
+        try {
+            id = Integer.parseInt(keyword); // For UserID
+        } catch (NumberFormatException e) {
+            id = -1; // Set to invalid ID if keyword isn't a number
+        }
         
-        try(ResultSet rs = stmt.executeQuery()){
-          while (rs.next()) {
-            Users user = new Users();
-            user.setUserID(rs.getInt("UserID"));
-            user.setUsername(rs.getString("Username"));
-            user.setPassword(rs.getString("Password"));
-            user.setEmail(rs.getString("Email"));
-            user.setFullName(rs.getString("FullName"));
-            user.setDob(rs.getDate("Dob"));
-            user.setGender(rs.getString("Gender"));
-            user.setPhone(rs.getString("Phone"));
-            user.setAddress(rs.getString("Address"));
-            user.setMedicalHistory(rs.getString("MedicalHistory"));
-            user.setSpecialization(rs.getString("Specialization"));
-            user.setRole(rs.getString("Role"));
-            user.setStatus(rs.getString("Status"));
-            user.setCreatedBy(rs.getObject("CreatedBy") != null ? rs.getInt("CreatedBy") : null);
-            user.setCreatedAt(rs.getDate("CreatedAt"));
-            user.setUpdatedAt(rs.getDate("UpdatedAt"));
+        int year;
+        try {
+            year = Integer.parseInt(keyword); // For year of Dob
+        } catch (NumberFormatException e) {
+            year = -1; // Set to invalid year if keyword isn't a number
+        }
+
+        stmt.setInt(1, id); // UserID
+        stmt.setString(2, searchPattern); // FullName
+        stmt.setString(3, searchPattern); // Gender
+        stmt.setString(4, searchPattern); // Specialization
+        stmt.setInt(5, year); // Year of Dob
+
+        try (ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                Users user = new Users();
+                user.setUserID(rs.getInt("UserID"));
+                user.setUsername(rs.getString("Username"));
+                user.setPassword(rs.getString("Password"));
+                user.setEmail(rs.getString("Email"));
+                user.setFullName(rs.getString("FullName"));
+                user.setDob(rs.getDate("Dob"));
+                user.setGender(rs.getString("Gender"));
+                user.setPhone(rs.getString("Phone"));
+                user.setAddress(rs.getString("Address"));
+                user.setMedicalHistory(rs.getString("MedicalHistory"));
+                user.setSpecialization(rs.getString("Specialization"));
+                user.setRole(rs.getString("Role"));
+                user.setStatus(rs.getString("Status"));
+                user.setCreatedBy(rs.getObject("CreatedBy") != null ? rs.getInt("CreatedBy") : null);
+                user.setCreatedAt(rs.getDate("CreatedAt"));
+                user.setUpdatedAt(rs.getDate("UpdatedAt"));
                 list.add(user);
-        }
-    } catch (SQLException e) {
+            }
+        } catch (SQLException e) {
             System.err.println("Lỗi khi tìm kiếm nhân viên: " + e.getMessage());
-            throw e; // Ném ngoại lệ để xử lý ở cấp cao hơn
+            throw e;
         }
-    
-return list;
     }
-        }
+    return list;
+}
 
 
     // Cập nhật thông tin hồ sơ của user
