@@ -1,3 +1,9 @@
+<%-- 
+    Document   : AddPatient
+    Created on : May 26, 2025
+    Author     : ADMIN
+--%>
+
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
@@ -72,6 +78,7 @@
             .form-group input[type="email"],
             .form-group input[type="password"],
             .form-group input[type="date"],
+            .form-group input[type="tel"],
             .form-group select,
             .input-box input,
             .input-box select {
@@ -163,8 +170,9 @@
                     <div class="input-box">
                         <select class="form-select" id="gender" name="gender" required>
                             <option value="" disabled ${empty gender ? 'selected' : ''}>Chọn giới tính</option>
-                            <option value="Male" ${gender == 'Male' ? 'selected' : ''}>Nam</option>
-                            <option value="Female" ${gender == 'Female' ? 'selected' : ''}>Nữ</option>
+                            <option value="Nam" ${gender == 'Nam' ? 'selected' : ''}>Nam</option>
+                            <option value="Nữ" ${gender == 'Nữ' ? 'selected' : ''}>Nữ</option>
+                            <option value="Khác" ${gender == 'Khác' ? 'selected' : ''}>Khác</option>
                         </select>
                         <i class="fas fa-venus-mars"></i>
                     </div>
@@ -213,7 +221,7 @@
                 <div class="form-group">
                     <label for="address" class="form-label">Địa chỉ</label>
                     <div class="input-box">
-                        <input type="text" class="form-control" id="address" name="address" value="${address != null ? address : ''}" placeholder="Nhập địa chỉ">
+                        <input type="text" class="form-control" id="address" name="address" value="${address != null ? address : ''}" placeholder="Nhập địa chỉ" required>
                         <i class="fas fa-map-marker-alt"></i>
                     </div>
                 </div>

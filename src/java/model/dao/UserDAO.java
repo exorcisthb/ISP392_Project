@@ -351,75 +351,52 @@ public Users getEmployeeByID(int userID) throws SQLException {
     }
     return null;
 }
-public List<Users> getAllPatient() throws SQLException{
-        List<Users> users = new ArrayList<>();
-        String sql = "SELECT UserID, Username, [Password], Email, FullName, Dob, Gender, Phone, [Address], MedicalHistory, Specialization, [Role], [Status], CreatedBy, CreatedAt, UpdatedAt FROM Users WHERE Role IN ('patient')";
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        try {
-            System.out.println("Bắt đầu lấy kết nối tại 10:00 PM +07, 22/05/2025");
-            conn = dbContext.getConnection();
-            if (conn == null) {
-                System.out.println("Kết nối database thất bại tại 10:00 PM +07, 22/05/2025!");
-                return users;
-            }
-            System.out.println("Đã lấy kết nối thành công tại 10:00 PM +07, 22/05/2025");
-            stmt = conn.prepareStatement(sql);
-            System.out.println("Thực thi truy vấn: " + sql + " tại 10:00 PM +07, 22/05/2025");
-            rs = stmt.executeQuery();
-            if (!rs.isBeforeFirst()) {
-                System.out.println("Không có bản ghi nào được tìm thấy tại 10:00 PM +07, 22/05/2025");
-            }
-            while (rs.next()) {
-                Users user = new Users();
-                try {
-                    user.setUserID(rs.getInt("UserID"));
-                    user.setUsername(rs.getString("Username"));
-                    user.setPassword(rs.getString("Password"));
-                    user.setEmail(rs.getString("Email"));
-                    user.setFullName(rs.getString("FullName"));
-                    user.setDob(rs.getDate("Dob"));
-                    user.setGender(rs.getString("Gender"));
-                    user.setPhone(rs.getString("Phone"));
-                    user.setAddress(rs.getString("Address"));
-                    user.setMedicalHistory(rs.getString("MedicalHistory"));
-                    user.setSpecialization(rs.getString("Specialization"));
-                    user.setRole(rs.getString("Role"));
-                    user.setStatus(rs.getString("Status"));
-                    user.setCreatedBy(rs.getObject("CreatedBy") != null ? rs.getInt("CreatedBy") : null);
-                    user.setCreatedAt(rs.getDate("CreatedAt"));
-                    user.setUpdatedAt(rs.getDate("UpdatedAt"));
-                    users.add(user);
-                    System.out.println("Đã ánh xạ: UserID=" + user.getUserID() + ", FullName=" + user.getFullName() + ", Role=" + user.getRole() + " tại 10:00 PM +07, 22/05/2025");
-                } catch (SQLException e) {
-                    System.out.println("Lỗi ánh xạ tại UserID=" + (rs.getObject("UserID") != null ? rs.getInt("UserID") : "null") + ": " + e.getMessage() + " tại 10:00 PM +07, 22/05/2025");
-                    e.printStackTrace();
-                }
-            }
-            System.out.println("Số lượng người dùng lấy được tại 10:00 PM +07, 22/05/2025: " + users.size());
-        } catch (SQLException e) {
-            System.out.println("Lỗi SQL tại 10:00 PM +07, 22/05/2025: " + e.getMessage() + ", SQLState: " + e.getSQLState() + ", Error Code: " + e.getErrorCode());
-            e.printStackTrace();
-        } finally {
-            if (rs != null) try {
-                rs.close();
+public List<Users> getAllPatient() throws SQLException {
+    List<Users> users = new ArrayList<>();
+    String sql = "SELECT UserID, Username, [Password], Email, FullName, Dob, Gender, Phone, [Address], MedicalHistory, Specialization, [Role], [Status], CreatedBy, CreatedAt, UpdatedAt FROM Users WHERE Role IN ('patient')";
+    
+    try (Connection conn = dbContext.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(sql);
+         ResultSet rs = stmt.executeQuery()) {
+
+        if (!rs.isBeforeFirst()) {
+            System.out.println("Không có bản ghi nào được tìm thấy.");
+        }
+
+        while (rs.next()) {
+            Users user = new Users();
+            try {
+                user.setUserID(rs.getInt("UserID"));
+                user.setUsername(rs.getString("Username"));
+                user.setPassword(rs.getString("Password"));
+                user.setEmail(rs.getString("Email"));
+                user.setFullName(rs.getString("FullName"));
+                user.setDob(rs.getDate("Dob"));
+                user.setGender(rs.getString("Gender"));
+                user.setPhone(rs.getString("Phone"));
+                user.setAddress(rs.getString("Address"));
+                user.setMedicalHistory(rs.getString("MedicalHistory"));
+                user.setSpecialization(rs.getString("Specialization"));
+                user.setRole(rs.getString("Role"));
+                user.setStatus(rs.getString("Status"));
+                user.setCreatedBy(rs.getObject("CreatedBy") != null ? rs.getInt("CreatedBy") : null);
+                user.setCreatedAt(rs.getDate("CreatedAt"));
+                user.setUpdatedAt(rs.getDate("UpdatedAt"));
+                users.add(user);
+                System.out.println("Đã ánh xạ: UserID=" + user.getUserID() + ", FullName=" + user.getFullName() + ", Role=" + user.getRole());
             } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            if (stmt != null) try {
-                stmt.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            if (conn != null) try {
-                conn.close();
-            } catch (SQLException e) {
+                System.out.println("Lỗi ánh xạ tại UserID=" + (rs.getObject("UserID") != null ? rs.getInt("UserID") : "null") + ": " + e.getMessage());
                 e.printStackTrace();
             }
         }
-        return users;
+        System.out.println("Số lượng người dùng lấy được: " + users.size());
+    } catch (SQLException e) {
+        System.out.println("Lỗi SQL: " + e.getMessage() + ", SQLState: " + e.getSQLState() + ", Error Code: " + e.getErrorCode());
+        e.printStackTrace();
+        throw e; // Ném lại ngoại lệ để Servlet xử lý
     }
+    return users;
+}
 public Users getPatientByID(int userID) throws SQLException {
     String sql = "SELECT * FROM Users WHERE userID = ? AND Role IN ('patient')";
     try (Connection conn = dbContext.getConnection();
