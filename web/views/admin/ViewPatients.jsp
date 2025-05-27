@@ -155,6 +155,14 @@
                 <div class="d-flex justify-content-start mb-3">
                     <a href="${pageContext.request.contextPath}/views/admin/dashboard.jsp" class="btn btn-primary">Home</a>
                 </div>
+                <!-- FORM TÌM KIẾM -->
+                <div class="mb-3">
+                    <form action="ViewPatientServlet" method="get" class="d-flex search-form" style="max-width: 600px;">
+                        <input type="text" name="keyword" class="form-control me-2" placeholder="Tìm theo tên, email..."
+                               value="${keyword != null ? keyword : ''}">
+                        <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+                    </form>
+                </div>
                 <h2 class="text-center mb-4">Danh sách Bệnh Nhân</h2>
                 <div class="d-flex justify-content-end mb-3">
                     <a href="${pageContext.request.contextPath}/views/admin/AddPatient.jsp" class="btn btn-success">Thêm bệnh nhân</a>

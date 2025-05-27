@@ -24,18 +24,27 @@ public class ViewPatientServlet extends HttpServlet {
     }
 
     @Override
-protected void doGet(HttpServletRequest request, HttpServletResponse response)
-        throws ServletException, IOException {
-    try {
-        List<Users> patients = userService.getAllPatient();
-        System.out.println("Số lượng bệnh nhân lấy được: " + (patients != null ? patients.size() : 0)); // Thêm log
-        request.setAttribute("patients", patients); // Fixed attribute name
-    } catch (SQLException e) {
-        e.printStackTrace();
-        request.setAttribute("error", "Lỗi khi tải danh sách bệnh nhân: " + e.getMessage());
-        System.out.println("Lỗi SQL: " + e.getMessage()); // Thêm log lỗi
-    }
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
 
-    request.getRequestDispatcher("views/admin/ViewPatients.jsp").forward(request, response);
-}
+        String keyword = request.getParameter("keyword");
+        List<Users> patients = null;
+
+        try {
+            if (keyword != null && !keyword.trim().isEmpty()) {
+                patients = userService.searchPatients(keyword.trim());
+            } else {
+                patients = userService.getAllPatient();
+            }
+
+            request.setAttribute("patients", patients);
+            request.setAttribute("keyword", keyword); // giữ lại keyword trong input nếu cần
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            request.setAttribute("error", "Lỗi khi tải danh sách bệnh nhân: " + e.getMessage());
+        }
+
+        request.getRequestDispatcher("/views/admin/ViewPatients.jsp").forward(request, response);
+    }
 }

@@ -137,11 +137,11 @@ public boolean registerUserBasic(Users user) throws SQLException {
         }
         return user;
     }
-    public List<Users> searchEmployees(String keyword) throws SQLException {
+   public List<Users> searchEmployees(String keyword) throws SQLException {
     List<Users> list = new ArrayList<>();
     String sql = "SELECT * FROM Users " +
                  "WHERE role IN ('doctor', 'nurse', 'receptionist') " +
-                 "AND (UserID = ? OR fullName LIKE ? OR gender LIKE ? OR specialization LIKE ? OR YEAR(dob) = ?)";
+                 "AND (UserID = ? OR fullName LIKE ? OR gender LIKE ? OR specialization LIKE ? OR YEAR(dob) = ? OR phone LIKE ?)";
     try (Connection conn = dbContext.getConnection(); 
          PreparedStatement stmt = conn.prepareStatement(sql)) {
         
@@ -165,6 +165,7 @@ public boolean registerUserBasic(Users user) throws SQLException {
         stmt.setString(3, searchPattern); // Gender
         stmt.setString(4, searchPattern); // Specialization
         stmt.setInt(5, year); // Year of Dob
+        stmt.setString(6, searchPattern); // Phone
 
         try (ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
@@ -189,6 +190,65 @@ public boolean registerUserBasic(Users user) throws SQLException {
             }
         } catch (SQLException e) {
             System.err.println("Lỗi khi tìm kiếm nhân viên: " + e.getMessage());
+            throw e;
+        }
+    }
+    return list;
+}
+     public List<Users> searchPatients(String keyword) throws SQLException {
+    List<Users> list = new ArrayList<>();
+    String sql = "SELECT * FROM Users " +
+                 "WHERE role = 'patient' " +
+                 "AND (UserID = ? OR fullName LIKE ? OR gender LIKE ? OR address LIKE ? OR YEAR(dob) = ? or phone like ? )";
+    
+    try (Connection conn = dbContext.getConnection(); 
+         PreparedStatement stmt = conn.prepareStatement(sql)) {
+        
+        String searchPattern = "%" + keyword + "%";
+        int id;
+        try {
+            id = Integer.parseInt(keyword); // For UserID
+        } catch (NumberFormatException e) {
+            id = -1; // Invalid ID
+        }
+
+        int year;
+        try {
+            year = Integer.parseInt(keyword); // For Year of Birth
+        } catch (NumberFormatException e) {
+            year = -1; // Invalid Year
+        }
+
+        stmt.setInt(1, id);                // UserID
+        stmt.setString(2, searchPattern);  // fullName
+        stmt.setString(3, searchPattern);  // gender
+        stmt.setString(4, searchPattern);  // address
+        stmt.setInt(5, year);              // Year(dob)
+        stmt.setString(6, searchPattern); // Phone
+
+        try (ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                Users user = new Users();
+                user.setUserID(rs.getInt("UserID"));
+                user.setUsername(rs.getString("Username"));
+                user.setPassword(rs.getString("Password"));
+                user.setEmail(rs.getString("Email"));
+                user.setFullName(rs.getString("FullName"));
+                user.setDob(rs.getDate("Dob"));
+                user.setGender(rs.getString("Gender"));
+                user.setPhone(rs.getString("Phone"));
+                user.setAddress(rs.getString("Address"));
+                user.setMedicalHistory(rs.getString("MedicalHistory"));
+                user.setSpecialization(rs.getString("Specialization"));
+                user.setRole(rs.getString("Role"));
+                user.setStatus(rs.getString("Status"));
+                user.setCreatedBy(rs.getObject("CreatedBy") != null ? rs.getInt("CreatedBy") : null);
+                user.setCreatedAt(rs.getDate("CreatedAt"));
+                user.setUpdatedAt(rs.getDate("UpdatedAt"));
+                list.add(user);
+            }
+        } catch (SQLException e) {
+            System.err.println("Lỗi khi tìm kiếm bệnh nhân: " + e.getMessage());
             throw e;
         }
     }

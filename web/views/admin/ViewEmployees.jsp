@@ -173,6 +173,7 @@
                             <th>Giới tính</th>
                             <th>Chuyên khoa</th>
                             <th>Ngày sinh</th>
+                              <th>SĐT</th>
                             <th>Trạng thái</th>
                             <th>Hành động</th>
                         </tr>
@@ -199,6 +200,7 @@
                                         <td>
                                             <fmt:formatDate value="${user.dob}" pattern="dd/MM/yyyy" />
                                         </td>
+                                         <td>${user.phone}</td>
                                         <td>${user.status}</td>
                                         <td>
                                             <a href="${pageContext.request.contextPath}/ViewDetailEmployeesServlet?id=${user.userID}" class="btn btn-sm btn-info text-white">Xem chi tiết</a>

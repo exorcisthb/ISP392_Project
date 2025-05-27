@@ -348,4 +348,7 @@ public boolean registerUser(String username, String email, String password, Stri
     public List<Users> searchEmployees(String keyword) throws SQLException {
         return userDAO.searchEmployees(keyword);
     }
+      public List<Users> searchPatients(String keyword) throws SQLException {
+        return userDAO.searchPatients(keyword);
+    }
 }
