@@ -13,32 +13,62 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            margin: 0;
+            position: relative;
+            padding-top: 60px;
         }
         .search-container {
-            max-width: 800px;
+            max-width: 600px;
             width: 100%;
-            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
             position: relative;
         }
         .search-container input {
             width: 100%;
-            padding: 10px 40px 10px 12px;
+            height: 36px;
+            padding: 8px 40px 8px 10px;
             border: 1px solid #d1d5db;
-            border-radius: 6px;
+            border-radius: 4px 0 0 4px;
             outline: none;
             transition: border-color 0.3s;
             background-color: #ffffff;
+            font-size: 0.9rem;
+            box-sizing: border-box;
+            line-height: normal;
         }
         .search-container input:focus {
             border-color: #10b981;
             box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
         }
+        .search-container button {
+            height: 36px;
+            padding: 0 12px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            background-color: #059669;
+            color: white;
+            border: 1px solid #059669;
+            border-left: none;
+            border-radius: 0 4px 4px 0;
+            transition: background-color 0.3s ease;
+            line-height: normal;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .search-container button:hover {
+            background-color: #047857;
+        }
         .search-icon {
             position: absolute;
-            right: 12px;
+            right: 10px;
             top: 50%;
             transform: translateY(-50%);
-            font-size: 1.2rem;
+            font-size: 0.9rem;
             color: #6b7280;
             pointer-events: none;
         }
@@ -78,20 +108,39 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            width: 100%;
+            max-width: 1000px;
+            margin: 0 auto;
+            position: relative;
+        }
+        .header-bar {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            max-width: 1000px;
+            position: fixed;
+            top: 20px;
+            z-index: 10;
+        }
+        .user-menu-container {
+            position: absolute;
+            top: 0;
+            right: 0;
         }
         .user-menu-btn {
             background-color: #10b981;
             color: white;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%; /* Makes the button circular */
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             transition: background-color 0.3s ease;
             border: none;
             cursor: pointer;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
         }
         .user-menu-btn:hover {
             background-color: #059669;
@@ -101,9 +150,8 @@
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             position: absolute;
-            right: 0;
-            top: 100%;
-            margin-top: 8px;
+            right: 0; /* Căn phải với nút hình người */
+            top: 40px; /* Đặt ngay dưới nút hình người (36px là chiều cao của nút + 4px khoảng cách) */
             min-width: 150px;
             z-index: 10;
             display: none;
@@ -123,29 +171,27 @@
     </style>
 </head>
 <body>
-    <div class="container mx-auto p-4">
-      
-                <!-- FORM TÌM KIẾM -->
-                <div class="mb-3">
-                    <form action="ViewEmployeeServlet" method="get" class="d-flex search-form" style="max-width: 600px;">
-                        <input type="text" name="keyword" class="form-control me-2" placeholder="Tìm theo tên, email..."
-                               value="${keyword != null ? keyword : ''}">
-                        <button type="submit" class="btn btn-primary">Tìm kiếm</button>
-                    </form>
+    <div class="header-bar">
+        <div class="search-container">
+            <form action="ViewEmployeeServlet" method="get" class="flex w-full">
+                <div class="relative w-full">
+                    <input type="text" name="keyword" class="form-control" placeholder="Tìm theo tên, email..."
+                           value="${keyword != null ? keyword : ''}">
+                    <span class="search-icon">🔍</span>
                 </div>
-           
+                <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+            </form>
         </div>
-        <!-- Header with User Menu -->
-        <div class="flex justify-end mb-6 w-full relative">
-            <div class="relative">
-                <button id="userMenuBtn" class="user-menu-btn">👤</button>
-                <div id="userMenu" class="user-menu">
-                    <a href="${pageContext.request.contextPath}/AdminProfileController" class="block">View Profile</a>
-                    <a href="${pageContext.request.contextPath}/EditProfileAdminController" class="block">Edit Profile</a>
-                    <a href="${pageContext.request.contextPath}/LogoutServlet" class="block" onclick="return confirm('Bạn có chắc muốn thoát?')">Sign Out</a>
-                </div>
+        <div class="user-menu-container">
+            <button id="userMenuBtn" class="user-menu-btn">👤</button>
+            <div id="userMenu" class="user-menu">
+                <a href="${pageContext.request.contextPath}/AdminProfileController" class="block">View Profile</a>
+                <a href="${pageContext.request.contextPath}/EditProfileAdminController" class="block">Edit Profile</a>
+                <a href="${pageContext.request.contextPath}/LogoutServlet" class="block" onclick="return confirm('Bạn có chắc muốn thoát?')">Sign Out</a>
             </div>
         </div>
+    </div>
+    <div class="container mx-auto p-4" style="margin-top: 80px;">
         <!-- Action Buttons -->
         <div class="action-card">
             <h3>Dental Clinic Management</h3>
