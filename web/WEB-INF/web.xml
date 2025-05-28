@@ -58,6 +58,6 @@
         <url-pattern>/ViewEmployeeServlet</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
-        <welcome-file>views/common/login.jsp</welcome-file>
+        <welcome-file>views/common/HomePage.jsp</welcome-file>
     </welcome-file-list>
 </web-app>

@@ -19,11 +19,11 @@
         <div class="wrapper">
             <nav class="nav">
                 <div class="nav-logo">
-                    <p>Group 1</p>
+                    <a href="${pageContext.request.contextPath}/views/common/HomePage.jsp">PDC</a>
                 </div>
                 <div class="nav-menu">
                     <ul>
-                        <li><a href="views/common/login.jsp" class="link active">Home</a></li>
+                        <li><a href="${pageContext.request.contextPath}/views/common/HomePage.jsp" class="link active">Home</a></li>
                         <li><a href="interface/Blog.jsp" class="link">Blog</a></li>
                         <li><a href="interface/Service.jsp" class="link">Services</a></li>
                         <li><a href="interface/About.jsp" class="link">About</a></li>
@@ -36,7 +36,7 @@
             </nav>
 
             <!-- Login Form -->
-            <div class="form-box" id="login" style="display: ${requestScope.form == null || requestScope.form == 'login' ? 'block' : 'none'};">
+            <div class="form-box" id="login" style="display: ${empty param.form || param.form == 'login' ? 'block' : 'none'};">
                 <div class="top">
                     <span>Không có tài khoản? <a href="javascript:void(0)" onclick="register()">Sign Up</a></span>
                     <header>Đăng Nhập</header>
@@ -81,7 +81,7 @@
             </div>
 
             <!-- Registration Form -->
-            <div class="form-box" id="register" style="display: ${requestScope.form == 'register' ? 'block' : 'none'};">
+            <div class="form-box" id="register" style="display: ${param.form == 'register' ? 'block' : 'none'};">
                 <div class="top">
                     <span>Có tài khoản? <a href="javascript:void(0)" onclick="login()">Sign In</a></span>
                     <header>Sign Up</header>
