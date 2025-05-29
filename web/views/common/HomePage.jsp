@@ -1,9 +1,3 @@
-<%-- 
-    Document   : index
-    Created on : May 28, 2025, 7:54:00 PM
-    Author     : Grok
---%>
-
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
@@ -120,34 +114,51 @@
             margin-bottom: 40px;
         }
         .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
             gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .grid-row {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            width: 100%;
         }
         .service-card {
-            background: #FFFFFF; /* Trắng */
+            background: #FFFFFF; /* White background */
             padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s;
+            border-radius: 10px; /* Rounded corners */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+            text-align: center;
+            cursor: pointer; /* Indicate clickable */
+            transition: transform 0.2s, box-shadow 0.2s; /* Smooth hover effect */
+            flex: 1 1 30%; /* Ensure 3 cards per row */
+            max-width: 30%; /* Limit width for 3 cards */
+            box-sizing: border-box;
         }
         .service-card:hover {
-            transform: translateY(-5px); /* Hiệu ứng nâng lên khi hover */
+            transform: translateY(-5px); /* Lift effect */
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15); /* Enhanced shadow on hover */
         }
         .service-card svg {
-            width: 48px;
-            height: 48px;
-            margin-bottom: 20px;
-            color: #8B4513; /* Nâu đậm */
+            width: 50px;
+            height: 50px;
+            margin-bottom: 15px;
+            color: #D4A017; /* Gold color for icons */
         }
         .service-card h3 {
-            font-size: 20px;
-            color: #8B4513; /* Nâu đậm */
+            font-size: 18px;
+            color: #1F2937; /* Dark gray for title */
             margin-bottom: 10px;
+            font-weight: 600;
         }
         .service-card p {
-            font-size: 16px;
-            color: #666666; /* Xám nhạt */
+            font-size: 14px;
+            color: #4B5563; /* Gray for description */
+            margin-bottom: 0;
         }
         /* Footer */
         footer {
@@ -169,7 +180,7 @@
             </div>
             <!-- Navigation -->
             <nav>
-                <a href="#">Home</a>
+                <a href="${pageContext.request.contextPath}/views/common/HomePage.jsp">Home</a>
                 <a href="#">Blog</a>
                 <a href="#">Service</a>
                 <a href="#">About</a>
@@ -187,7 +198,7 @@
         <div class="container">
             <p>PDC là công ty bệnh nha khoa được nhiều người tin tưởng trong lĩnh vực chăm sóc sức khỏe răng miệng.</p>
             <p class="slogan">"Giải pháp tối ưu, cân thiện tối thiểu" – đó chính là slogan và mục tiêu mà Nha Khoa PDC đang, và sẽ thực hiện trong suốt thời gian hoạt động.</p>
-            <a href="#">Tìm hiểu về PDC</a>
+            <a href="${pageContext.request.contextPath}/BookAppointmentController">Đặt lịch khám</a>
         </div>
     </section>
 
@@ -197,57 +208,86 @@
             <h2>Dịch vụ nha khoa</h2>
             <p>Chúng tôi cung cấp dịch vụ hàng đầu với triết lý “Giải pháp tối ưu, cân thiện tối thiểu”.</p>
             <div class="grid">
-                <!-- Cấy ghép Implant -->
-                <div class="service-card">
-                    <svg class="text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c0-1.1-.9-2-2-2s-2 .9-2 2v2c0 1.1.9 2 2 2s2-.9 2-2v-2zm0 0c0-1.1-.9-2-2-2s-2 .9-2 2v2c0 1.1.9 2 2 2s2-.9 2-2v-2zm0 0c0-1.1-.9-2-2-2s-2 .9-2 2v2c0 1.1.9 2 2 2s2-.9 2-2v-2z"></path>
-                    </svg>
-                    <h3>Cấy ghép Implant</h3>
-                    <p>Giải pháp phục hồi răng mất, đảm bảo thẩm mỹ và chức năng nhai tốt nhất cho người dùng.</p>
+                <!-- Top Row: 3 Cards -->
+                <div class="grid-row">
+                    <!-- Cấy ghép Implant -->
+                    <a href="${pageContext.request.contextPath}/ViewServiceByCategoryServlet?category=implant" class="service-card">
+                        <svg class="text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c0-1.1-.9-2-2-2s-2 .9-2 2v2c0 1.1.9 2 2 2s2-.9 2-2v-2zm0 0c0-1.1-.9-2-2-2s-2 .9-2 2v2c0 1.1.9 2 2 2s2-.9 2-2v-2zm0 0c0-1.1-.9-2-2-2s-2 .9-2 2v2c0 1.1.9 2 2 2s2-.9 2-2v-2z"></path>
+                        </svg>
+                        <h3>Cấy ghép Implant</h3>
+                        <p>Giải pháp phục hồi răng mất, đảm bảo thẩm mỹ và chức năng nhai tốt nhất cho người dùng.</p>
+                    </a>
+                    <!-- Chỉnh nha mắc cài -->
+                    <a href="${pageContext.request.contextPath}/ViewServiceByCategoryServlet?category=mắc cài" class="service-card">
+                        <svg class="text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c0-1.1-.9-2-2-2s-2 .9-2 2v2c0 1.1.9 2 2 2s2-.9 2-2v-2zm0 0c0-1.1-.9-2-2-2s-2 .9-2 2v2c0 1.1.9 2 2 2s2-.9 2-2v-2zm0 0c0-1.1-.9-2-2-2s-2 .9-2 2v2c0 1.1.9 2 2 2s2-.9 2-2v-2z"></path>
+                        </svg>
+                        <h3>Chỉnh nha mắc cài</h3>
+                        <p>Nắn chỉnh răng mọc lệch, giúp bạn có một nụ cười khỏe mạnh và tự tin.</p>
+                    </a>
+                    <!-- Nha khoa trẻ em -->
+                    <a href="${pageContext.request.contextPath}/ViewServiceByCategoryServlet?category=trẻ em" class="service-card">
+                        <svg class="text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c0-1.1-.9-2-2-2s-2 .9-2 2v2c0 1.1.9 2 2 2s2-.9 2-2v-2zm0 0c0-1.1-.9-2-2-2s-2 .9-2 2v2c0 1.1.9 2 2 2s2-.9 2-2v-2zm0 0c0-1.1-.9-2-2-2s-2 .9-2 2v2c0 1.1.9 2 2 2s2-.9 2-2v-2z"></path>
+                        </svg>
+                        <h3>Nha khoa trẻ em</h3>
+                        <p>Mang đến nụ cười khỏe mạnh cho trẻ, giúp trẻ tự tin và có hàm răng đều đẹp.</p>
+                    </a>
                 </div>
-                <!-- Chỉnh nha mắc cài -->
-                <div class="service-card">
-                    <svg class="text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c0-1.1-.9-2-2-2s-2 .9-2 2v2c0 1.1.9 2 2 2s2-.9 2-2v-2zm0 0c0-1.1-.9-2-2-2s-2 .9-2 2v2c0 1.1.9 2 2 2s2-.9 2-2v-2zm0 0c0-1.1-.9-2-2-2s-2 .9-2 2v2c0 1.1.9 2 2 2s2-.9 2-2v-2z"></path>
-                    </svg>
-                    <h3>Chỉnh nha mắc cài</h3>
-                    <p>Nắn chỉnh răng mọc lệch, giúp bạn có một nụ cười khỏe mạnh và tự tin.</p>
-                </div>
-                <!-- Nha khoa trẻ em -->
-                <div class="service-card">
-                    <svg class="text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c0-1.1-.9-2-2-2s-2 .9-2 2v2c0 1.1.9 2 2 2s2-.9 2-2v-2zm0 0c0-1.1-.9-2-2-2s-2 .9-2 2v2c0 1.1.9 2 2 2s2-.9 2-2v-2zm0 0c0-1.1-.9-2-2-2s-2 .9-2 2v2c0 1.1.9 2 2 2s2-.9 2-2v-2z"></path>
-                    </svg>
-                    <h3>Nha khoa trẻ em</h3>
-                    <p>Mang đến nụ cười khỏe mạnh cho trẻ, giúp trẻ tự tin và có hàm răng đều đẹp.</p>
-                </div>
-                <!-- Phẫu thuật chỉnh hình xương hàm -->
-                <div class="service-card">
-                    <svg class="text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c0-1.1-.9-2-2-2s-2 .9-2 2v2c0 1.1.9 2 2 2s2-.9 2-2v-2zm0 0c0-1.1-.9-2-2-2s-2 .9-2 2v2c0 1.1.9 2 2 2s2-.9 2-2v-2zm0 0c0-1.1-.9-2-2-2s-2 .9-2 2v2c0 1.1.9 2 2 2s2-.9 2-2v-2z"></path>
-                    </svg>
-                    <h3>Phẫu thuật chỉnh hình xương hàm</h3>
-                    <p>Giải quyết các vấn đề chỉnh nắn thẩm mỹ và chức năng hàm, nâng cao chất lượng cuộc sống.</p>
-                </div>
-                <!-- Nha khoa thẩm mỹ -->
-                <div class="service-card">
-                    <svg class="text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c0-1.1-.9-2-2-2s-2 .9-2 2v2c0 1.1.9 2 2 2s2-.9 2-2v-2zm0 0c0-1.1-.9-2-2-2s-2 .9-2 2v2c0 1.1.9 2 2 2s2-.9 2-2v-2zm0 0c0-1.1-.9-2-2-2s-2 .9-2 2v2c0 1.1.9 2 2 2s2-.9 2-2v-2z"></path>
-                    </svg>
-                    <h3>Nha khoa thẩm mỹ</h3>
-                    <p>Mang đến nụ cười tự nhiên, giúp bạn tự tin với nụ cười trắng sáng và hoàn hảo.</p>
-                </div>
-                <!-- Nhổ răng khôn -->
-                <div class="service-card">
-                    <svg class="text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c0-1.1-.9-2-2-2s-2 .9-2 2v2c0 1.1.9 2 2 2s2-.9 2-2v-2zm0 0c0-1.1-.9-2-2-2s-2 .9-2 2v2c0 1.1.9 2 2 2s2-.9 2-2v-2zm0 0c0-1.1-.9-2-2-2s-2 .9-2 2v2c0 1.1.9 2 2 2s2-.9 2-2v-2z"></path>
-                    </svg>
-                    <h3>Nhổ răng khôn</h3>
-                    <p>Tiến hành an toàn, nhẹ nhàng với công nghệ hiện đại, đảm bảo không đau và nhanh chóng.</p>
+                <!-- Bottom Row: 3 Cards -->
+                <div class="grid-row">
+                    <!-- Phẫu thuật chỉnh hình xương hàm -->
+                    <a href="${pageContext.request.contextPath}/ViewServiceByCategoryServlet?category=xương hàm" class="service-card">
+                        <svg class="text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c0-1.1-.9-2-2-2s-2 .9-2 2v2c0 1.1.9 2 2 2s2-.9 2-2v-2zm0 0c0-1.1-.9-2-2-2s-2 .9-2 2v2c0 1.1.9 2 2 2s2-.9 2-2v-2zm0 0c0-1.1-.9-2-2-2s-2 .9-2 2v2c0 1.1.9 2 2 2s2-.9 2-2v-2z"></path>
+                        </svg>
+                        <h3>Phẫu thuật chỉnh hình xương hàm</h3>
+                        <p>Giải quyết các vấn đề chỉnh nắn thẩm mỹ và chức năng hàm, nâng cao chất lượng cuộc sống.</p>
+                    </a>
+                    <!-- Nha khoa thẩm mỹ -->
+                    <a href="${pageContext.request.contextPath}/ViewServiceByCategoryServlet?category=thẩm mỹ" class="service-card">
+                        <svg class="text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c0-1.1-.9-2-2-2s-2 .9-2 2v2c0 1.1.9 2 2 2s2-.9 2-2v-2zm0 0c0-1.1-.9-2-2-2s-2 .9-2 2v2c0 1.1.9 2 2 2s2-.9 2-2v-2zm0 0c0-1.1-.9-2-2-2s-2 .9-2 2v2c0 1.1.9 2 2 2s2-.9 2-2v-2z"></path>
+                        </svg>
+                        <h3>Nha khoa thẩm mỹ</h3>
+                        <p>Mang đến nụ cười tự nhiên, giúp bạn tự tin với nụ cười trắng sáng và hoàn hảo.</p>
+                    </a>
+                    <!-- Nhổ răng khôn -->
+                    <a href="${pageContext.request.contextPath}/ViewServiceByCategoryServlet?category=răng khôn" class="service-card">
+                        <svg class="text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c0-1.1-.9-2-2-2s-2 .9-2 2v2c0 1.1.9 2 2 2s2-.9 2-2v-2zm0 0c0-1.1-.9-2-2-2s-2 .9-2 2v2c0 1.1.9 2 2 2s2-.9 2-2v-2zm0 0c0-1.1-.9-2-2-2s-2 .9-2 2v2c0 1.1.9 2 2 2s2-.9 2-2v-2z"></path>
+                        </svg>
+                        <h3>Nhổ răng khôn</h3>
+                        <p>Tiến hành an toàn, nhẹ nhàng với công nghệ hiện đại, đảm bảo không đau và nhanh chóng.</p>
+                    </a>
                 </div>
             </div>
         </div>
     </section>
 
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>© 2025 Nha Khoa PDC. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript for interactions -->
+    <script>
+        // Toggle user menu
+        const userMenuBtn = document.getElementById('userMenuBtn');
+        const userMenu = document.getElementById('userMenu');
+        userMenuBtn.addEventListener('click', function() {
+            userMenu.style.display = userMenu.style.display === 'block' ? 'none' : 'block';
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!userMenuBtn.contains(event.target) && !userMenu.contains(event.target)) {
+                userMenu.style.display = 'none';
+            }
+        });
+    </script>
 </body>
 </html>

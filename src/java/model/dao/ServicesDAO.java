@@ -1,4 +1,3 @@
-
 package model.dao;
 
 import java.sql.Connection;
@@ -19,17 +18,19 @@ public class ServicesDAO {
     private static final String SELECT_ALL_SERVICES = "SELECT ServiceID, ServiceName, [Description], Price, [Status], CreatedBy, CreatedAt, UpdatedAt FROM Services";
     private static final String CHECK_SERVICE_NAME_AND_PRICE_EXISTS = "SELECT COUNT(*) FROM Services WHERE ServiceName = ? AND Price = ?";
     private static final String DELETE_SERVICE_SQL = "DELETE FROM Services WHERE ServiceID = ?";
+    private static final String SELECT_SERVICES_BY_CATEGORY = "SELECT ServiceID, ServiceName, [Description], Price, [Status], CreatedBy, CreatedAt, UpdatedAt FROM Services WHERE UPPER(ServiceName) LIKE ? AND [Status] = 'Active'";
 
     private final DBContext dbContext;
 
     public ServicesDAO() {
         this.dbContext = DBContext.getInstance();
     }
-private void validateServiceName(String serviceName) throws SQLException {
+
+    private void validateServiceName(String serviceName) throws SQLException {
         if (serviceName == null || serviceName.trim().isEmpty()) {
             throw new SQLException("Tên không được để trống.");
         }
-         if (!serviceName.trim().matches("^[\\p{L}0-9\\s-]+$")) {
+        if (!serviceName.trim().matches("^[\\p{L}0-9\\s-]+$")) {
             throw new SQLException("Tên dịch vụ không hợp lệ");
         }
     }
@@ -171,5 +172,29 @@ private void validateServiceName(String serviceName) throws SQLException {
             }
         }
         return services;
+    }
+
+    public List<Services> getServicesByCategory(String category) throws SQLException {
+        List<Services> services = new ArrayList<>();
+        try (Connection conn = dbContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(SELECT_SERVICES_BY_CATEGORY)) {
+            stmt.setString(1, "%" + category.toUpperCase() + "%");
+            System.out.println("Executing SQL: " + SELECT_SERVICES_BY_CATEGORY + " with category=" + category + " at " + LocalDateTime.now() + " +07");
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Services service = new Services();
+                    service.setServiceID(rs.getInt("ServiceID"));
+                    service.setServiceName(rs.getString("ServiceName"));
+                    service.setDescription(rs.getString("Description"));
+                    service.setPrice(rs.getDouble("Price"));
+                    service.setStatus(rs.getString("Status"));
+                    service.setCreatedBy(rs.getObject("CreatedBy") != null ? rs.getInt("CreatedBy") : 0);
+                    service.setCreatedAt(rs.getTimestamp("CreatedAt") != null ? new java.sql.Date(rs.getTimestamp("CreatedAt").getTime()) : null);
+                    service.setUpdatedAt(rs.getTimestamp("UpdatedAt") != null ? new java.sql.Date(rs.getTimestamp("UpdatedAt").getTime()) : null);
+                    services.add(service);
+                }
+            }
+            System.out.println("Found " + services.size() + " services for category=" + category + " at " + LocalDateTime.now() + " +07");
+            return services;
+        }
     }
 }

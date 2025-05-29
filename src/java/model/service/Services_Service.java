@@ -115,4 +115,8 @@ public class Services_Service {
     public boolean isServiceNameAndPriceExists(String serviceName, double price) throws SQLException {
         return servicesDAO.isServiceNameAndPriceExists(serviceName, price);
     }
+    public List<Services> getServicesByCategory(String category) throws SQLException {
+    ServicesDAO servicesDAO = new ServicesDAO();
+    return servicesDAO.getServicesByCategory(category);
+}
 }

@@ -12,8 +12,8 @@ import model.service.Services_Service;
 import java.io.IOException;
 import java.sql.SQLException;
 
-@WebServlet(name = "ViewDetailServiceServlet", urlPatterns = {"/ViewDetailServiceServlet", "/admin/viewDetailService"})
-public class ViewDetailServiceServlet extends HttpServlet {
+@WebServlet(name = "ViewDetailServiceAdminServlet", urlPatterns = {"/ViewDetailServiceAdminServlet", "/admin/ViewDetailServiceAdmin"})
+public class ViewDetailServiceAdminServlet extends HttpServlet {
 
     private Services_Service servicesService;
 
@@ -26,7 +26,7 @@ public class ViewDetailServiceServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setCharacterEncoding("UTF-8");
-    request.setCharacterEncoding("UTF-8");
+   
         String idStr = request.getParameter("id");
         try {
             int id = Integer.parseInt(idStr);
@@ -38,7 +38,7 @@ public class ViewDetailServiceServlet extends HttpServlet {
             } else {
                 System.out.println("Không tìm thấy service với ServiceID=" + id + " tại 09:41 PM +07, 23/05/2025");
             }
-            request.getRequestDispatcher("/views/admin/ViewDetailService.jsp").forward(request, response);
+            request.getRequestDispatcher("/views/admin/ViewDetailServiceAdmin.jsp").forward(request, response);
         } catch (NumberFormatException e) {
             System.out.println("Lỗi: ID không hợp lệ tại 09:41 PM +07, 23/05/2025: " + e.getMessage());
             request.setAttribute("error", "ID không hợp lệ");
@@ -55,8 +55,8 @@ public class ViewDetailServiceServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setCharacterEncoding("UTF-8");
-    request.setCharacterEncoding("UTF-8");
+ 
         // Redirect POST requests to GET to prevent form resubmission
-        response.sendRedirect(request.getContextPath() + "/ViewDetailServiceServlet");
+        response.sendRedirect(request.getContextPath() + "/ViewDetailServiceAdminServlet");
     }
 }
