@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import model.entity.Schedules;
 import model.entity.Rooms;
+import model.dao.DBContext;
 
 public class SchedulesDAO {
     private DBContext dbContext;
@@ -56,7 +57,7 @@ public class SchedulesDAO {
     }
 
     // Lấy phòng khả dụng cho DoctorID và NurseID cụ thể
-    private Room getAvailableRoomForDoctorAndNurse(int doctorID, int nurseID) throws SQLException {
+    private Rooms getAvailableRoomForDoctorAndNurse(int doctorID, int nurseID) throws SQLException {
         String query = "SELECT RoomID, DoctorID, NurseID FROM Rooms WHERE DoctorID = ? AND NurseID = ? AND Status = 'Available'";
         try (Connection conn = dbContext.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -64,7 +65,7 @@ public class SchedulesDAO {
             stmt.setInt(2, nurseID);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                Room room = new Room();
+                Rooms room = new Rooms();
                 room.setRoomID(rs.getInt("RoomID"));
                 room.setDoctorID(rs.getInt("DoctorID"));
                 room.setNurseID(rs.getInt("NurseID"));
@@ -87,7 +88,7 @@ public class SchedulesDAO {
         }
 
         // Lấy phòng khả dụng cho bác sĩ và y tá cụ thể
-        Room room = getAvailableRoomForDoctorAndNurse(doctorID, nurseID);
+        Rooms room = getAvailableRoomForDoctorAndNurse(doctorID, nurseID);
         if (room == null) {
             return false; // Không có phòng khả dụng cho bác sĩ và y tá này
         }
